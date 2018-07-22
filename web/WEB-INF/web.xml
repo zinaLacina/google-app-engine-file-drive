@@ -2,31 +2,31 @@
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
     <servlet>
         <servlet-name>Register</servlet-name>
-        <servlet-class>ccDocStrg.Register</servlet-class>
+        <servlet-class>controller.Register</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Validate</servlet-name>
-        <servlet-class>ccDocStrg.Validate</servlet-class>
+        <servlet-class>controller.Validate</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Logout</servlet-name>
-        <servlet-class>ccDocStrg.Logout</servlet-class>
+        <servlet-class>controller.Logout</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Update</servlet-name>
-        <servlet-class>ccDocStrg.Update</servlet-class>
+        <servlet-class>controller.Update</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Upload</servlet-name>
-        <servlet-class>ccDocStrg.Upload</servlet-class>
+        <servlet-class>controller.Upload</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Delete</servlet-name>
-        <servlet-class>ccDocStrg.Delete</servlet-class>
+        <servlet-class>controller.Delete</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Download</servlet-name>
-        <servlet-class>ccDocStrg.Download</servlet-class>
+        <servlet-class>controller.Download</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>

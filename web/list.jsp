@@ -11,8 +11,8 @@
 <%@page import="com.google.appengine.api.datastore.Entity"%>
 <%@page import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
 <%@page import="com.google.appengine.api.datastore.DatastoreService"%>
-<%@page import="ccDocStrg.Defs"%>
-<%@page import="ccDocStrg.User"%>
+<%@page import="config.Defs"%>
+<%@page import="model.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

@@ -1,5 +1,5 @@
 
-package ccDocStrg;
+package model;
 
 import java.io.Serializable;
 

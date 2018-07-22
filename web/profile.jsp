@@ -4,9 +4,9 @@
     Author     : Muhammad Wannous
 --%>
 
-<%@page import="ccDocStrg.Defs"%>
+<%@page import="config.Defs"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ page import="ccDocStrg.User" %>
+<%@ page import="model.User" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>

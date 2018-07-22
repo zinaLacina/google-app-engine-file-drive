@@ -4,7 +4,7 @@
     Author     : Muhammad Wannous
 --%>
 
-<%@page import="ccDocStrg.Defs"%>
+<%@page import="config.Defs"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -18,10 +18,10 @@
         <link rel="stylesheet" href="lib/bower_components/bootstrap/dist/css/bootstrap.min.css">
         <!-- Font Awesome -->
         <link rel="stylesheet" href="lib/bower_components/font-awesome/css/font-awesome.min.css">
-        <!-- Ionicons -->
-        <link rel="stylesheet" href="lib/bower_components/Ionicons/css/ionicons.min.css">
+        
         <!-- Theme style -->
         <link rel="stylesheet" href="lib/dist/css/AdminLTE.min.css">
+        <link rel="stylesheet" href="assets/css/style.css">
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -34,60 +34,59 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     </head>
     <body class="hold-transition login-page">
-        
+
         <div class="login-box">
             <div class="login-logo">
                 <a href="#"><b>CLOUD</b>Storage</a><br>
-              <i style="font-size: 0.4em">A Cloud-based application for storing files.</i>
+                <i style="font-size: 0.4em">A Cloud-based application for storing files.</i>
             </div>
             <!-- /.login-logo -->
             <div class="login-box-body">
-              <p class="login-box-msg">Sign in to start your session</p>
-              <p align="center">
-                    <%=(session.getAttribute(Defs.SESSION_MESSAGE_STRING) == null ? "" : 
-                            session.getAttribute(Defs.SESSION_MESSAGE_STRING))%>
-              </p>
+                <p class="login-box-msg">Sign in to start your session</p>
+                <p align="center" class="error blink_me">
+                    <%=(session.getAttribute(Defs.SESSION_MESSAGE_STRING) == null ? ""
+                            : session.getAttribute(Defs.SESSION_MESSAGE_STRING))%>
+                </p>
 
-              <form method="post" action="validate">
-                <div class="form-group has-feedback">
-                  <input type="email" class="form-control" placeholder="Email" id="userName" name="userName">
-                  <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-                </div>
-                <div class="form-group has-feedback">
-                  <input type="password" class="form-control" placeholder="Password" id="passWord" name="passWord">
-                  <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-                </div>
-                <div class="row">
-                  <div class="col-xs-8">
-                    <div class="checkbox icheck">
-                      <label>
-                        <input type="checkbox"> Remember Me
-                      </label>
+                <form method="post" action="validate">
+                    <div class="form-group has-feedback">
+                        <input type="email" class="form-control" placeholder="Email" id="userName" name="userName">
+                        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                     </div>
-                  </div>
-                  <!-- /.col -->
-                  <div class="col-xs-4">
-                    <button type="submit" class="btn btn-primary btn-block btn-flat" value="Login">Login</button>
-                  </div>
-                  <!-- /.col -->
-                </div>
-              </form>
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" placeholder="Password" id="passWord" name="passWord">
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-1"></div>
+                        <div class="col-xs-6">
+                            <div class="checkbox icheck">
+                                <label>
+                                    <input type="checkbox"> Remember Me
+                                </label>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-xs-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat" value="Login">Login</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
 
-              <!-- /.social-auth-links -->
-
-              <a href="#">I forgot my password</a><br>
-              <!--<a href="register.html" class="text-center">New user? Register</a>-->
-              <span class="text-center">New user? Register <a href="register.jsp">here.</span>
+               <!-- <a href="#">I forgot my password</a><br>
+                <a href="register.html" class="text-center">New user? Register</a>-->
+                <span class="text-center">New user? Register <a href="register.jsp">here.</span>
 
             </div>
             <!-- /.login-box-body -->
-          </div>
-        
-        
-        
+        </div>
+
+
+
         <script src="lib/bower_components/jquery/dist/jquery.min.js"></script>
         <!-- Bootstrap 3.3.7 -->
         <script src="lib/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-       
+
     </body>
 </html>

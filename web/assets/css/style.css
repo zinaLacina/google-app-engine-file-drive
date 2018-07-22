@@ -1,0 +1,33 @@
+.login-box-body, .register-box-body {
+    background: transparent;
+    border: 1px solid;
+    font-weight: bold;
+}
+.login-page, .register-page{
+    background-image: url('../img/cloudimagestorage.jpg');
+    background-size: cover;
+}
+.login-logo, .register-logo {
+    font-size: 35px;
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 300;
+    color: white;
+}
+.error{
+    color:red;
+}
+
+.text-muted {
+    color: #178e17;
+}
+
+.blink_me {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {  
+    50% { opacity: 0; }
+}
+
+

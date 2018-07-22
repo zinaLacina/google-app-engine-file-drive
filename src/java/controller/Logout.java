@@ -1,5 +1,6 @@
-package ccDocStrg;
+package controller;
 
+import config.Defs;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

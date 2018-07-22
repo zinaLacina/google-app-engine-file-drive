@@ -1,5 +1,7 @@
-package ccDocStrg;
+package controller;
 
+import config.Defs;
+import model.User;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +13,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +43,8 @@ public class Register extends HttpServlet {
     String userName = request.getParameter(Defs.PARAM_USERNAME_STRING);
     String passWord = request.getParameter(Defs.PARAM_PASSWORD_STRING);
     String rPassWord = request.getParameter(Defs.PARAM_RETRYPASSWORD_STRING);
+    String firstName = request.getParameter(Defs.ENTITY_PROPERTY_FIRSTNAME_STRING);
+    String lastName = request.getParameter(Defs.ENTITY_PROPERTY_LASTNAME_STRING);
     //Check the validity of the user name (should be between 5 and 30 characters) and the password
     if (userName.length() <= 30
             && userName.matches("[a-zA-Z0-9]{1,}@[a-zA-Z0-9]{1,}.[a-zA-Z0-9]{1,}")
@@ -47,7 +52,7 @@ public class Register extends HttpServlet {
             && passWord.length() <= 15
             && passWord.equals(rPassWord)) {
       //The input is valid.
-      User newUser = new User("", "", userName, passWord);
+      User newUser = new User(firstName, lastName, userName, passWord);
       //Prepare the Datastore service.
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
       //Check if the user name is already used.
@@ -66,6 +71,7 @@ public class Register extends HttpServlet {
         userEntity.setProperty(Defs.ENTITY_PROPERTY_LASTNAME_STRING, newUser.getLastName());
         userEntity.setProperty(Defs.ENTITY_PROPERTY_USERNAME_STRING, newUser.getUserName());
         userEntity.setProperty(Defs.ENTITY_PROPERTY_PASSWORD_STRING, newUser.getPassWord());
+        userEntity.setProperty(Defs.ENTITY_PROPERTY_DATE_CREATION, new Date());
         //Save the information of the new user in Datastore.
         datastore.put(userEntity);
         //Set an appropriate message in the session context.

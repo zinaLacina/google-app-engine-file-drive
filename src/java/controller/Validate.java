@@ -1,5 +1,7 @@
-package ccDocStrg;
+package controller;
 
+import config.Defs;
+import model.User;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -16,10 +18,10 @@ import javax.servlet.http.HttpSession;
 /**
  *
  * @author Muhammad Wannous
- * This Servlet accepts a number of parameters for the user profile.
- * It uses the parameters to update the user's profile.
+ * This Servlet accepts two parameters for the user name password
+ * It uses the parameters to validate a registered user.
  */
-public class Update extends HttpServlet {
+public class Validate extends HttpServlet {
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,57 +35,51 @@ public class Update extends HttpServlet {
           throws ServletException, IOException {
     //Prepare the session context.
     HttpSession session = request.getSession(true);
-    //Get the user information from the session context.
-    User currentUSer = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-    if (currentUSer != null) {
-      //Get the parameters from the request.
-      String userName = request.getParameter(Defs.PARAM_USERNAME_STRING);
-      String passWord = request.getParameter(Defs.PARAM_PASSWORD_STRING);
-      String firstName = request.getParameter(Defs.PARAM_FIRSTNAME_STRING);
-      String lastName = request.getParameter(Defs.PARAM_LASTNAME_STRING);
-      String newPassWord = request.getParameter(Defs.PARAM_NEWPASSWORD_STRING);
-      String rPassWord = request.getParameter(Defs.PARAM_RETRYPASSWORD_STRING);
+    //Get the user name and password from the request.
+    String userName = request.getParameter(Defs.PARAM_USERNAME_STRING);
+    String passWord = request.getParameter(Defs.PARAM_PASSWORD_STRING);
+    //See if we have a corresponding entity in datastore.
+    if (!userName.isEmpty() && !passWord.isEmpty()) {
       //Prepare the Datastore service.
       DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-      //Search for the user in Datastore by using a query.
+      //We will serach in the 'Users' table for a match.
       Query userQuery = new Query(Defs.DATASTORE_KIND_USER_STRING);
-      //Set a proper filter for the user name only.
+      //Set two filetrs on the user name and password
       Query.Filter nameFilter = new Query.FilterPredicate(Defs.ENTITY_PROPERTY_USERNAME_STRING,
               Query.FilterOperator.EQUAL, userName);
-      userQuery.setFilter(nameFilter);
+      Query.Filter passwordFilter = new Query.FilterPredicate(Defs.ENTITY_PROPERTY_PASSWORD_STRING,
+              Query.FilterOperator.EQUAL, passWord);
+      Query.Filter userFilter = Query.CompositeFilterOperator.and(nameFilter, passwordFilter);
+      userQuery.setFilter(userFilter);
       //Run the query.
       List<Entity> dbUsers = datastore.prepare(userQuery).asList(FetchOptions.Builder.withDefaults());
       if (!dbUsers.isEmpty()) {
         //We have a match.
         Entity userEntity = dbUsers.get(0);
-        userEntity.setProperty(Defs.ENTITY_PROPERTY_FIRSTNAME_STRING, firstName);
-        userEntity.setProperty(Defs.ENTITY_PROPERTY_LASTNAME_STRING, lastName);
-        //Check the validity of the user's input.
-        if (!passWord.isEmpty()
-                && !newPassWord.isEmpty()
-                && !rPassWord.isEmpty()
-                && newPassWord.length() >= 7
-                && newPassWord.length() <= 15
-                && newPassWord.equals(rPassWord)) {
-          userEntity.setProperty(Defs.ENTITY_PROPERTY_PASSWORD_STRING, newPassWord);
-        }
-        datastore.put(userEntity);
-        //Save the user information into Datastore.
-        currentUSer.setFirstName(firstName);
-        currentUSer.setLastName(lastName);
+        User user = new User((String) userEntity.getProperty(Defs.ENTITY_PROPERTY_FIRSTNAME_STRING),
+                (String) userEntity.getProperty(Defs.ENTITY_PROPERTY_LASTNAME_STRING),
+                (String) userEntity.getProperty(Defs.ENTITY_PROPERTY_USERNAME_STRING),
+                "");
+        //Set the user information in the session context for future requests.
+        //The password is not included.
+        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Welcome, " + user.getUserName());
+        session.setAttribute(Defs.SESSION_USER_STRING, user);
+        //Send the user to the page which lists the files.
+        response.sendRedirect(Defs.HOME_PAGE_STRING);
+      } else {
+        //There was no match in the 'Users'!
+        //Take the user back to the log in page.
+        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "We couldn't match your input to a registered user!");
+        response.sendRedirect(Defs.LOGIN_PAGE_STRING);
       }
-      //Give a proper response message.
-      //Send the browser to the page which lists the files.
-      session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Profile saved.");
-      response.sendRedirect(Defs.LIST_PAGE_STRING);
     } else {
-      //If the user has not logged in then return him/her to the login page.
-      session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login firt!");
+      //Invalid input 
+      session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Check your input!");
       response.sendRedirect(Defs.LOGIN_PAGE_STRING);
     }
   }
 
-  // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
   /**
    * Handles the HTTP <code>GET</code> method.
    *

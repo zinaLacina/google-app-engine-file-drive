@@ -1,0 +1,18 @@
+.menu-down{
+    position: fixed;
+    bottom: 0;
+}
+.content-header {
+    padding: 0px 15px 0 0;
+}
+
+ul.menu-home li {
+    display: inline-block;
+    margin-right: 10px;
+    list-style: none;
+}
+
+.content-header a{
+    color:green;
+}
+

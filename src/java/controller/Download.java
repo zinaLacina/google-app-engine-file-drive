@@ -1,5 +1,7 @@
-package ccDocStrg;
+package controller;
 
+import config.Defs;
+import model.User;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsInputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
