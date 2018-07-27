@@ -23,14 +23,22 @@
 
         <!-- Sidebar Menu -->
         <ul class="sidebar-menu" data-widget="tree">
-            <li><a href="#"><i class="fa fa-folder"></i> <span>All Files</span></a></li>
-            <li><a href="#"><i class="fa fa-clock-o"></i> <span>Recent</span></a></li>
-            <li><a href="#"><i class="fa fa-star"></i> <span>Favorites</span></a></li>
-            <li><a href="#"><i class="fa fa-share"></i> <span>Share with you</span></a></li>
-            <li><a href="#"><i class="fa fa-share"></i> <span>Share with others</span></a></li>
+            <li><a href="home.jsp"><i class="fa fa-folder"></i> <span>All Files</span></a></li>
+            <li><a href="recent.jsp"><i class="fa fa-clock-o"></i> <span>Recent</span></a></li>
+            <li><a href="favorite.jsp"><i class="fa fa-star"></i> <span>Favorites</span></a></li>
+            <li><a href="shareMe.jsp"><i class="fa fa-share"></i> <span>Share with you</span></a></li>
+            <li><a href="shareOther.jsp"><i class="fa fa-share"></i> <span>Share with others</span></a></li>
         </ul>
         <ul class="sidebar-menu menu-down">
-            <li><a href="#"><i class="fa fa-trash"></i> <span>Deleted</span></a></li>
+            <li><a href="deleted.jsp"><i class="fa fa-trash"></i> <span>Deleted</span></a></li>
+            <li class="progress-size">
+                <p>7 MB used</p>
+           
+                <div class="progress">
+                    <i class="fa fa-adjust"></i>
+                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="300"></div>
+                </div>
+            </li>
         </ul>
         <!-- /.sidebar-menu -->
     </section>

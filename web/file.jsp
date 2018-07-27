@@ -55,17 +55,24 @@
             <div class="box-header with-border">
               <h3 class="box-title">Upload a file</h3>
             </div>
-        <form class="form-horizontal formulaire" method="post" action="upload" enctype="multipart/form-data">
+        <form class="form-horizontal formulaire" method="post" action="file">
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <label class="file-upload btn btn-success">
-                        <input type="file" id="fileName" name="fileName"/>
-                    </label>
+                    <label class="file-upload btn btn-success">File name</label>
+                        <input type="text" id="fileName" name="fileName"/>
+                    
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <label class="file-upload btn btn-success" for="fileContent">Content</label>
+                    <textarea type="text" id="fileContent" name="fileContent" class="textarea"></textarea>
+                    
                 </div>
             </div>
             <div class="form-group">        
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">Upload</button>
+                    <button type="submit" class="btn btn-default">Create</button>
                 </div>
             </div>
         </form>

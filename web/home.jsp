@@ -16,7 +16,7 @@
 
 <%
     User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-    String name = currentUser.getFirstName()+" "+currentUser.getLastName();
+    String name = currentUser.getFirstName() + " " + currentUser.getLastName();
 %>
 
 <jsp:include page="header/header.jsp"/>
@@ -29,9 +29,16 @@
     <section class="content-header">
 
         <ul class="menu-home">
-            <li><a href="home.jsp"><i class="fa fa-home fa-2x"></i></a></li>
+            <li><a href="home.jsp" class="btn btn-default"><i class="fa fa-home fa-2x"></i></a></li>
             <li><i class="fa fa-2x fa-angle-right"></i></li>
-            <li><a href="home.jsp"><i class="fa fa-2x fa-plus"></i></a></li>
+            <li class="dropdown">
+                <a href="#" class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown"><i class="fa fa-2x fa-plus"></i></a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                    <li><a href="upload.jsp"><i class="fa fa-upload"></i>Upload file</a></li>
+                    <li><a href="folder.jsp"><i class="fa fa-folder"></i>New folder</a></li>
+                    <li><a href="file.jsp"><i class="fa fa-file-text"></i>New text file</a></li>
+                </ul>
+            </li>
         </ul>
     </section>
 
@@ -41,11 +48,6 @@
         <!--------------------------
         | Your Page Content Here |
         -------------------------->
-        <p align="right">
-            <%=session.getAttribute(Defs.SESSION_MESSAGE_STRING)%>
-
-        </p>
-
         <table class="table table-hover">
             <%
 
@@ -79,16 +81,12 @@
             %>
         </table>
 
-        <footer>
-            <a href="/">Home</a> | 
-            <a href="upload.jsp">Upload a file</a> | 
-            <a href="logout">Logout</a> | 
-            <a href="profile.jsp">Update profile</a></footer>
-            <%              } else {
-                    session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login firt!");
-                    response.sendRedirect(Defs.LOGIN_PAGE_STRING);
-                }
-            %>
+
+        <%              } else {
+                session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login firt!");
+                response.sendRedirect(Defs.LOGIN_PAGE_STRING);
+            }
+        %>
     </section>
     <!-- /.content -->
 </div>

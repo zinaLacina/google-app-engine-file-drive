@@ -1,6 +1,12 @@
 .menu-down{
     position: fixed;
     bottom: 0;
+    width: 230px;
+    padding: 10px;
+}
+
+.menu-down li.progress-size{
+    padding-left: 17px;
 }
 .content-header {
     padding: 0px 15px 0 0;
@@ -14,5 +20,9 @@ ul.menu-home li {
 
 .content-header a{
     color:green;
+}
+
+form.formulaire{
+    padding: 5px;
 }
 

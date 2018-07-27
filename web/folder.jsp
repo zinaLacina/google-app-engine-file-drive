@@ -53,23 +53,26 @@
         <p id="welcome"></p>
         <div class="box box-success">
             <div class="box-header with-border">
-              <h3 class="box-title">Upload a file</h3>
+                <h3 class="box-title">Create a folder</h3>
             </div>
-        <form class="form-horizontal formulaire" method="post" action="upload" enctype="multipart/form-data">
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <label class="file-upload btn btn-success">
-                        <input type="file" id="fileName" name="fileName"/>
-                    </label>
+            <form class="form-horizontal formulaire" method="post" action="folder">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-5">
+                        <label for="folderName">Folder name</label>
+                        <input type="text" class="form-control" id="folderName" name="folderName"/>
+
+                    </div>
+                    <div class="col-sm-5"></div>
                 </div>
-            </div>
-            <div class="form-group">        
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">Upload</button>
+                <div class="form-group">        
+                    <div class="col-sm-offset-2 col-sm-5">
+                        <button type="submit" class="btn btn-default">Create</button>
+                    </div>
+                    <div class="col-sm-5"></div>
                 </div>
-            </div>
-        </form>
+            </form>
         </div>
+
 
     </section>
     <!-- /.content -->

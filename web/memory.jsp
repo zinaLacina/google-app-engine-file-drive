@@ -51,25 +51,7 @@
                 pageContext.setAttribute("userIn", thisUser);
         %>
         <p id="welcome"></p>
-        <div class="box box-success">
-            <div class="box-header with-border">
-              <h3 class="box-title">Upload a file</h3>
-            </div>
-        <form class="form-horizontal formulaire" method="post" action="upload" enctype="multipart/form-data">
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <label class="file-upload btn btn-success">
-                        <input type="file" id="fileName" name="fileName"/>
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">        
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">Upload</button>
-                </div>
-            </div>
-        </form>
-        </div>
+            Memory remain display
 
     </section>
     <!-- /.content -->

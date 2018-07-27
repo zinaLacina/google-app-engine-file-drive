@@ -28,6 +28,38 @@
         <servlet-name>Download</servlet-name>
         <servlet-class>controller.Download</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Folder</servlet-name>
+        <servlet-class>controller.Folder</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Recent</servlet-name>
+        <servlet-class>controller.Recent</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Favorite</servlet-name>
+        <servlet-class>controller.Favorite</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ShareMe</servlet-name>
+        <servlet-class>controller.ShareMe</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ShareOther</servlet-name>
+        <servlet-class>controller.ShareOther</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Deleted</servlet-name>
+        <servlet-class>controller.Deleted</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Memory</servlet-name>
+        <servlet-class>controller.Memory</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>File</servlet-name>
+        <servlet-class>controller.File</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/register</url-pattern>
@@ -55,6 +87,38 @@
     <servlet-mapping>
         <servlet-name>Download</servlet-name>
         <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Folder</servlet-name>
+        <url-pattern>/folder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Recent</servlet-name>
+        <url-pattern>/recent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Favorite</servlet-name>
+        <url-pattern>/favorite</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ShareMe</servlet-name>
+        <url-pattern>/shareMe</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ShareOther</servlet-name>
+        <url-pattern>/shareOther</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Deleted</servlet-name>
+        <url-pattern>/deleted</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Memory</servlet-name>
+        <url-pattern>/memory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>File</servlet-name>
+        <url-pattern>/file</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
