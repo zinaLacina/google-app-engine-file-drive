@@ -45,6 +45,7 @@ public class Register extends HttpServlet {
     String rPassWord = request.getParameter(Defs.PARAM_RETRYPASSWORD_STRING);
     String firstName = request.getParameter(Defs.ENTITY_PROPERTY_FIRSTNAME_STRING);
     String lastName = request.getParameter(Defs.ENTITY_PROPERTY_LASTNAME_STRING);
+    String photo = "";
     //Check the validity of the user name (should be between 5 and 30 characters) and the password
     if (userName.length() <= 30
             && userName.matches("[a-zA-Z0-9]{1,}@[a-zA-Z0-9]{1,}.[a-zA-Z0-9]{1,}")
@@ -71,6 +72,8 @@ public class Register extends HttpServlet {
         userEntity.setProperty(Defs.ENTITY_PROPERTY_LASTNAME_STRING, newUser.getLastName());
         userEntity.setProperty(Defs.ENTITY_PROPERTY_USERNAME_STRING, newUser.getUserName());
         userEntity.setProperty(Defs.ENTITY_PROPERTY_PASSWORD_STRING, newUser.getPassWord());
+        userEntity.setProperty(Defs.ENTITY_PROPERTY_PHOTO, photo);
+        userEntity.setProperty(Defs.ENTITY_PROPERTY_QUOTA, Defs.DATASTORE_MAX_STORAGE_USER);
         userEntity.setProperty(Defs.ENTITY_PROPERTY_DATE_CREATION, new Date());
         //Save the information of the new user in Datastore.
         datastore.put(userEntity);

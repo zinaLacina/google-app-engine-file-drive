@@ -5,20 +5,99 @@
  */
 package helper;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import config.Defs;
+import model.*;
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import model.User;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
  * @author lacinazina
  */
 public class Help {
-    
-    public boolean getRecent(Date date){
+
+    public boolean getRecent(Date date) {
         Date today = new Date();
-        return date.compareTo(today)==0;
+        return date.compareTo(today) == 0;
     }
-    
-    public boolean noSpace(){
+
+    public boolean noSpace() {
         return true;
     }
+
+    public static String getFileExt(String fileName) {
+        if (fileName != null) {
+            Filename fileN = new Filename(fileName, '/', '.');
+            String extension = fileN.extension();
+            if (extension != null) {
+                return extension;
+            } else {
+                return "none";
+            }
+        } else {
+            return "none";
+        }
+
+    }
+
+    public static long getFileSize(File file) {
+        // Get length of file in bytes
+        long fileSizeInBytes = file.length();
+        // Convert the bytes to Kilobytes (1 KB = 1024 Bytes)
+        long fileSizeInKB = fileSizeInBytes / 1024;
+        // Convert the KB to MegaBytes (1 MB = 1024 KBytes)
+        long fileSizeInMB = fileSizeInKB / 1024;
+        return fileSizeInMB;
+    }
+
+    public static long reductUserQuota(Long fileSize, User user) {
+        long size = user.getRemainMemory() - fileSize;
+        //user.setRemainMemory(size);
+        return size;
+    }
+
+    public static List<Files> folder(long userId) throws ParseException {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+        Filter currentIdUser = new FilterPredicate(Defs.ENTITY_PROPERTY_OWNER, FilterOperator.EQUAL, userId);
+        Filter isFolder = new FilterPredicate(Defs.ENTITY_PROPERTY_FOLDER, FilterOperator.EQUAL, 1);
+        Filter validFilter = CompositeFilterOperator.and(currentIdUser, isFolder);
+
+        Query fileQuery = new Query(Defs.DATASTORE_KIND_FILES_STRING).setFilter(validFilter);
+        //Query folderQuery = new Query(Defs.ENTITY_PROPERTY_FOLDER).setFilter(1);
+        List<Entity> files = datastore.prepare(fileQuery).asList(FetchOptions.Builder.withDefaults());
+
+        List<Files> result = new ArrayList<>();
+        if (!files.isEmpty()) {
+            Iterator<Entity> allFiles = files.iterator();
+            Files filesModel;
+            while (allFiles.hasNext()) {
+                Entity log = allFiles.next();
+                Date date1 = (Date) log.getProperty(Defs.ENTITY_PROPERTY_CREATED);
+                filesModel = new Files(1, 1, 2,
+                        (String) log.getProperty(Defs.ENTITY_PROPERTY_FILETYPE), userId,
+                        date1, (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING));
+                filesModel.setFileId(log.getKey().getId());
+                result.add(filesModel);
+
+            }
+        }
+        return result;
+    }
+
 }

@@ -5,6 +5,9 @@
 --%>
 
 
+<%@page import="helper.Help"%>
+<%@page import="model.Files"%>
+<%@page import="java.util.List"%>
 <%@page import="config.Defs"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.User" %>
@@ -12,8 +15,12 @@
 
 
 <%
-    User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-    String name = currentUser.getFirstName() + " " + currentUser.getLastName();
+    //User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+    String name;
+    User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+    if (thisUser != null) {
+        name = thisUser.getFirstName() + " " + thisUser.getLastName();
+        pageContext.setAttribute("userIn", thisUser);
 %>
 
 <jsp:include page="header/header.jsp"/>
@@ -45,43 +52,43 @@
         <!--------------------------
         | Your Page Content Here |
         -------------------------->
-        <%
-            User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-            if (thisUser != null) {
-                pageContext.setAttribute("userIn", thisUser);
-        %>
+
         <p id="welcome"></p>
         <div class="box box-success">
             <div class="box-header with-border">
-              <h3 class="box-title">Upload a file</h3>
+                <h3 class="box-title">Upload a file</h3>
             </div>
-        <form class="form-horizontal formulaire" method="post" action="upload" enctype="multipart/form-data">
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <label class="file-upload btn btn-success">
-                        <input type="file" id="fileName" name="fileName"/>
-                    </label>
+            <form class="form-horizontal formulaire" method="post" action="upload" enctype="multipart/form-data">
+                
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <label class="file-upload btn btn-success">
+                            <input type="file" id="fileName" name="fileName"/>
+                        </label>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">        
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">Upload</button>
+                <div class="form-group">        
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default">Upload</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
         </div>
 
     </section>
     <!-- /.content -->
 </div>
 
-<script>
-    document.getElementById("Welcome").innerHTML = "${fn:escapeXml(userIn.firstName)}";
-    <%
-        } else {
-            session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
-            response.sendRedirect(Defs.LOGIN_PAGE_STRING);
-        }
-    %>
-</script>
+
 <jsp:include page="footer/footer.jsp"/>
+<script>
+    document.getElementById("welcome").innerHTML = "${fn:escapeXml(userIn.firstName)}";
+
+</script>
+<jsp:include page="footer/close.jsp"/>
+<%
+    } else {
+        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
+        response.sendRedirect(Defs.LOGIN_PAGE_STRING);
+    }
+%>

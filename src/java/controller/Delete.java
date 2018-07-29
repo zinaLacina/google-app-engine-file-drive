@@ -40,6 +40,7 @@ public class Delete extends HttpServlet {
     User currentUSer = (User) session.getAttribute(Defs.SESSION_USER_STRING);
     //Get the file name from the URL
     String fileName = request.getParameter(Defs.PARAM_FILENAME_STRING);
+    long fileId = new Long(request.getParameter("fileId"));
     //Make sure that the user has already loggedin and that the fileName parameter is not empty/null.
     if (currentUSer != null
             && fileName != null
@@ -55,6 +56,8 @@ public class Delete extends HttpServlet {
       //Run the query.
       List<Entity> dbFiles = datastore.prepare(fileQuery).asList(FetchOptions.Builder.withDefaults());
       if (!dbFiles.isEmpty()) {
+          //Create entity Trah and save over there before remove
+          //dbFiles.get(0).
         //If the file name was found then delete it from the Datastore.
         datastore.delete(dbFiles.get(0).getKey());
         session.setAttribute(Defs.SESSION_MESSAGE_STRING, "The file indicated was deleted!");

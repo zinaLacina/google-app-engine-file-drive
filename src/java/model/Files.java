@@ -5,7 +5,6 @@
  */
 package model;
 
-import config.TypeFile;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -16,24 +15,43 @@ import java.util.List;
  */
 public class Files implements Serializable{
     
-    String FileName;
-    boolean status;
-    boolean isFolder;
-    String fileSize;
-    int parentFolder = 0;
-    TypeFile typeFile;
-    User owner;
-    List<User> accessRead;
-    List<User> fullAccess;
+    private long fileId;
+    String fileName;
+    int status;
+    int isFolder;
+    long fileSize;
+    long parentFolder = 0;
+    String typeFile;
+    long ownerid;
+    List<Long> accessRead;
+    List<Long> fullAccess;
     Date creationDate;
+    
 
-    public Files(boolean status, boolean isFolder, String fileSize, TypeFile typeFile, User owner, Date creationDate) {
+    public Files(int status, int isFolder, long fileSize, String typeFile, long owner, Date creationDate,String fileName) {
         this.status = status;
         this.isFolder = isFolder;
         this.fileSize = fileSize;
         this.typeFile = typeFile;
-        this.owner = owner;
+        this.ownerid = owner;
         this.creationDate = creationDate;
+        this.fileName = fileName;
+    }
+
+    public long getFileId() {
+        return fileId;
+    }
+
+    public void setFileId(long fileId) {
+        this.fileId = fileId;
+    }
+
+    public long getOwnerid() {
+        return ownerid;
+    }
+
+    public void setOwnerid(long ownerid) {
+        this.ownerid = ownerid;
     }
     
     
@@ -41,74 +59,74 @@ public class Files implements Serializable{
     
 
     public String getFileName() {
-        return FileName;
+        return fileName;
     }
 
     public void setFileName(String FileName) {
-        this.FileName = FileName;
+        this.fileName = FileName;
     }
 
-    public boolean isStatus() {
+    public int isStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
-    public boolean isIsFolder() {
+    public int isIsFolder() {
         return isFolder;
     }
 
-    public void setIsFolder(boolean isFolder) {
+    public void setIsFolder(int isFolder) {
         this.isFolder = isFolder;
     }
 
-    public String getFileSize() {
+    public long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(String fileSize) {
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 
-    public int getParentFolder() {
+    public long getParentFolder() {
         return parentFolder;
     }
 
-    public void setParentFolder(int parentFolder) {
+    public void setParentFolder(long parentFolder) {
         this.parentFolder = parentFolder;
     }
 
-    public TypeFile getTypeFile() {
+    public String getTypeFile() {
         return typeFile;
     }
 
-    public void setTypeFile(TypeFile typeFile) {
+    public void setTypeFile(String typeFile) {
         this.typeFile = typeFile;
     }
 
-    public User getOwner() {
-        return owner;
+    public long getOwner() {
+        return ownerid;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setOwner(long owner) {
+        this.ownerid = owner;
     }
 
-    public List<User> getAccessRead() {
+    public List<Long> getAccessRead() {
         return accessRead;
     }
 
-    public void setAccessRead(List<User> accessRead) {
+    public void setAccessRead(List<Long> accessRead) {
         this.accessRead = accessRead;
     }
 
-    public List<User> getFullAccess() {
+    public List<Long> getFullAccess() {
         return fullAccess;
     }
 
-    public void setFullAccess(List<User> fullAccess) {
+    public void setFullAccess(List<Long> fullAccess) {
         this.fullAccess = fullAccess;
     }
 

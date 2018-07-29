@@ -60,10 +60,13 @@ public class Validate extends HttpServlet {
                 (String) userEntity.getProperty(Defs.ENTITY_PROPERTY_LASTNAME_STRING),
                 (String) userEntity.getProperty(Defs.ENTITY_PROPERTY_USERNAME_STRING),
                 "");
+        user.setUserId(userEntity.getKey().getId());
+        //user.setRemainMemory(userEntity.getProperty(Defs.ENTITY_PROPERTY_QUOTA));
         //Set the user information in the session context for future requests.
         //The password is not included.
         session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Welcome, " + user.getUserName());
         session.setAttribute(Defs.SESSION_USER_STRING, user);
+        //session.setAttribute(Defs.PARAM_USER_KEY_STRING,userEntity.getKey());
         //Send the user to the page which lists the files.
         response.sendRedirect(Defs.HOME_PAGE_STRING);
       } else {

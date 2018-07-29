@@ -5,7 +5,15 @@
 --%>
 
 <%@page import="config.Defs"%>
+<%@ page import="model.User" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+
+    User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+    if (thisUser != null) {
+        response.sendRedirect(Defs.LIST_PAGE_STRING);
+    }
+%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,7 +26,7 @@
         <link rel="stylesheet" href="lib/bower_components/bootstrap/dist/css/bootstrap.min.css">
         <!-- Font Awesome -->
         <link rel="stylesheet" href="lib/bower_components/font-awesome/css/font-awesome.min.css">
-        
+
         <!-- Theme style -->
         <link rel="stylesheet" href="lib/dist/css/AdminLTE.min.css">
         <link rel="stylesheet" href="assets/css/style.css">
@@ -74,8 +82,8 @@
                     </div>
                 </form>
 
-               <!-- <a href="#">I forgot my password</a><br>
-                <a href="register.html" class="text-center">New user? Register</a>-->
+                <!-- <a href="#">I forgot my password</a><br>
+                 <a href="register.html" class="text-center">New user? Register</a>-->
                 <span class="text-center">New user? Register <a href="register.jsp">here.</span>
 
             </div>

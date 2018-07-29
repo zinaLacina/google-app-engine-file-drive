@@ -12,8 +12,11 @@
 
 
 <%
-    User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-    String name = currentUser.getFirstName() + " " + currentUser.getLastName();
+    User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+    String name;
+    if (thisUser != null) {
+        pageContext.setAttribute("userIn", thisUser);
+        name = thisUser.getFirstName() + " " + thisUser.getLastName();
 %>
 
 <jsp:include page="header/header.jsp"/>
@@ -45,50 +48,48 @@
         <!--------------------------
         | Your Page Content Here |
         -------------------------->
-        <%
-            User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-            if (thisUser != null) {
-                pageContext.setAttribute("userIn", thisUser);
-        %>
+
         <p id="welcome"></p>
         <div class="box box-success">
             <div class="box-header with-border">
-              <h3 class="box-title">Upload a file</h3>
+                <h3 class="box-title">Upload a file</h3>
             </div>
-        <form class="form-horizontal formulaire" method="post" action="file">
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <label class="file-upload btn btn-success">File name</label>
+            <form class="form-horizontal formulaire" method="post" action="file">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <label for="fileName">File name</label>
                         <input type="text" id="fileName" name="fileName"/>
-                    
+
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <label class="file-upload btn btn-success" for="fileContent">Content</label>
-                    <textarea type="text" id="fileContent" name="fileContent" class="textarea"></textarea>
-                    
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <label for="fileContent">Content</label>
+                        <textarea type="text" id="fileContent" name="fileContent" class="textarea"></textarea>
+
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">        
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">Create</button>
+                <div class="form-group">        
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-default">Create</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
         </div>
 
     </section>
     <!-- /.content -->
 </div>
 
+
+<jsp:include page="footer/footer.jsp"/>
 <script>
     document.getElementById("Welcome").innerHTML = "${fn:escapeXml(userIn.firstName)}";
-    <%
-        } else {
-            session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
-            response.sendRedirect(Defs.LOGIN_PAGE_STRING);
-        }
-    %>
+
 </script>
-<jsp:include page="footer/footer.jsp"/>
+<jsp:include page="footer/close.jsp"/>
+<%    } else {
+        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
+        response.sendRedirect(Defs.LOGIN_PAGE_STRING);
+    }
+%>

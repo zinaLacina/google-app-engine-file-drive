@@ -5,12 +5,20 @@
  */
 package controller;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import config.Defs;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import model.User;
 
 /**
  *
@@ -29,18 +37,41 @@ public class Folder extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet Folder</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet Folder at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        HttpSession session = request.getSession(true);
+
+        //Get the user information from the session context.
+        User currentUSer = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+        List<Long> fullAccess = new ArrayList<>();
+        List<Long> readAccess = new ArrayList<>();
+        if (currentUSer != null) {
+            //System.out.println(fileUpload.getFileSizeMax());
+            //File size controle
+            fullAccess.add(currentUSer.getUserId());
+            readAccess.add(currentUSer.getUserId());
+            String folderName = request.getParameter("folderName");
+
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+            Entity fileEntity = new Entity(Defs.DATASTORE_KIND_FILES_STRING);
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING, folderName);
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_OWNER, currentUSer.getUserId());
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_CREATED, new Date());
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_FULLACCESS, fullAccess);
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_ACCESSREAD, readAccess);
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, "none");
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER, 1);
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_PARENT, 0);
+
+            //No need for filters.
+            datastore.put(fileEntity);
+
+            session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Folder successfully created.");
+            response.sendRedirect(Defs.LIST_PAGE_STRING);
+
+        } else {
+            //If the user has not logged in then return him/her to the login page.
+            session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login firt!");
+            response.sendRedirect(Defs.LOGIN_PAGE_STRING);
         }
     }
 

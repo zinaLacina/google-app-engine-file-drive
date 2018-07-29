@@ -12,8 +12,12 @@
 
 
 <%
-    User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-    String name = currentUser.getFirstName() + " " + currentUser.getLastName();
+    //User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+    String name;
+    User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+    name = thisUser.getFirstName() + " " + thisUser.getLastName();
+    if (thisUser != null) {
+        pageContext.setAttribute("userIn", thisUser);
 %>
 
 <jsp:include page="header/header.jsp"/>
@@ -45,25 +49,29 @@
         <!--------------------------
         | Your Page Content Here |
         -------------------------->
-        <%
-            User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-            if (thisUser != null) {
-                pageContext.setAttribute("userIn", thisUser);
-        %>
+
         <p id="welcome"></p>
-            Deleted files
+        Deleted files
 
     </section>
     <!-- /.content -->
 </div>
 
-<script>
-    document.getElementById("Welcome").innerHTML = "${fn:escapeXml(userIn.firstName)}";
-    <%
-        } else {
-            session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
-            response.sendRedirect(Defs.LOGIN_PAGE_STRING);
-        }
-    %>
-</script>
+
+
 <jsp:include page="footer/footer.jsp"/>
+
+<script>
+
+    document.getElementById("Welcome").innerHTML = "${fn:escapeXml(userIn.firstName)}";
+
+</script>
+
+
+<jsp:include page="footer/close.jsp"/>
+<%
+    } else {
+        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
+        response.sendRedirect(Defs.LOGIN_PAGE_STRING);
+    }
+%>
