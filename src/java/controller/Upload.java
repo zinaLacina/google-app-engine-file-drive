@@ -5,13 +5,17 @@ import model.User;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
+
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appengine.tools.cloudstorage.RetryParams;
-import helper.Help;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -19,6 +23,8 @@ import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +37,8 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
- * @author Lacina ZINA This Servlet accepts a file from the user and saves
- * it to Google Cloud Storage. It uses the parameters to register a new user.
+ * @author Lacina ZINA This Servlet accepts a file from the user and saves it to
+ * Google Cloud Storage. It uses the parameters to register a new user.
  */
 public class Upload extends HttpServlet {
 
@@ -48,7 +54,7 @@ public class Upload extends HttpServlet {
     private static final int BUFFER_SIZE = 2 * 1024 * 1024;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, EntityNotFoundException {
         //Prepare the session context.
         HttpSession session = request.getSession(true);
         //Prepare a special Servlet to handle a multi-part file upload request.
@@ -76,6 +82,7 @@ public class Upload extends HttpServlet {
                     .retryMaxAttempts(10)
                     .totalRetryPeriodMillis(15000)
                     .build());
+            //gcsService.delete()
             //Start preparing the file object.
             GcsFileOptions instance = GcsFileOptions.getDefaultInstance();
             FileItemIterator fileItemIterator;
@@ -93,23 +100,45 @@ public class Upload extends HttpServlet {
                     copy(fileItem.openStream(), Channels.newOutputStream(outputChannel));
                     //Prepare Datastore service to save the file name in it.
                     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-                    //We will use the table 'Files' to save the file name.
-                    Entity fileEntity = new Entity(Defs.DATASTORE_KIND_FILES_STRING);
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING, fileNameparam);
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_OWNER, currentUSer.getUserId());
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_CREATED, new Date());
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_FULLACCESS, fullAccess);
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_ACCESSREAD, readAccess);
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, "txt");
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER, 0);
-                    fileEntity.setProperty(Defs.ENTITY_PROPERTY_PARENT, 0);
+                    //File size
+                    long fileSize = (long) gcsService.getMetadata(fileName).getLength();
+                    //rest of size
+                    long remainSize = currentUSer.getRemainMemory();
+                    if (fileSize <= remainSize) {
+                        //long fileSizeMb = fileSize/1024;
+                        currentUSer.setRemainMemory(currentUSer.getRemainMemory() - fileSize);
+                        session.setAttribute(Defs.SESSION_USER_STRING, currentUSer);
 
-                    //No need for filters.
-                    datastore.put(fileEntity);
-                    //Place a suitable message in the session context and redirect the browser to the page which
-                    //lists the files.
-                    session.setAttribute(Defs.SESSION_MESSAGE_STRING, "File upload completed.");
-                    response.sendRedirect(Defs.LIST_PAGE_STRING);
+                        //Update the remain memory of the user in the database
+                        Key userKey = KeyFactory.createKey(Defs.DATASTORE_KIND_USER_STRING, currentUSer.getUserId());
+
+                        Entity result = datastore.get(userKey);
+                        long resultQuota = currentUSer.getRemainMemory() - fileSize;
+                        result.setProperty(Defs.ENTITY_PROPERTY_QUOTA, resultQuota);
+                        datastore.put(result);
+
+                        //We will use the table 'Files' to save the file name.
+                        Entity fileEntity = new Entity(Defs.DATASTORE_KIND_FILES_STRING);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING, fileNameparam);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_OWNER, currentUSer.getUserId());
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_CREATED, new Date());
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FULLACCESS, fullAccess);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_ACCESSREAD, readAccess);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, "txt");
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, fileSize);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER, 0);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_PARENT, 0);
+
+                        //No need for filters.
+                        datastore.put(fileEntity);
+                        //Place a suitable message in the session context and redirect the browser to the page which
+                        //lists the files.
+                        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "File upload completed.");
+                        response.sendRedirect(Defs.LIST_PAGE_STRING);
+                    } else {
+                        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Your quota is finish, or the file is bigger than the rest of your quota");
+                        response.sendRedirect("upload.jsp");
+                    }
 
                 }
             } catch (FileUploadException ex) {
@@ -155,7 +184,11 @@ public class Upload extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(Upload.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -169,7 +202,11 @@ public class Upload extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(Upload.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

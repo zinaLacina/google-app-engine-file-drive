@@ -21,6 +21,7 @@
     if (thisUser != null) {
         name = thisUser.getFirstName() + " " + thisUser.getLastName();
         pageContext.setAttribute("userIn", thisUser);
+        String message = (String)session.getAttribute(Defs.SESSION_MESSAGE_STRING);
 %>
 
 <jsp:include page="header/header.jsp"/>
@@ -54,6 +55,7 @@
         -------------------------->
 
         <p id="welcome"></p>
+        <p id="message"><%=message%></p>
         <div class="box box-success">
             <div class="box-header with-border">
                 <h3 class="box-title">Upload a file</h3>

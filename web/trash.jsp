@@ -5,6 +5,7 @@
 --%>
 
 
+<%@page import="helper.Help"%>
 <%@page import="com.google.appengine.repackaged.org.apache.commons.logging.Log"%>
 <%@page import="java.util.NoSuchElementException"%>
 <%@page import="com.google.appengine.api.datastore.Query.Filter"%>
@@ -27,9 +28,10 @@
     //User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
     String name;
     User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-    name = thisUser.getFirstName() + " " + thisUser.getLastName();
+    
     long userId;
     if (thisUser != null) {
+        name = thisUser.getFirstName() + " " + thisUser.getLastName();
         pageContext.setAttribute("userIn", thisUser);
         userId = thisUser.getUserId();
 %>
@@ -59,7 +61,7 @@
 
     <!-- Main content -->
     <section class="content container-fluid">
-        
+
 
         <!--------------------------
         | Your Page Content Here |
@@ -81,6 +83,7 @@
                     <td><input type="checkbox"  id="all"></td>
                     <td>Type</td>
                     <td><b>File name</b></td>
+                    <td>Size</td>
                     <td></td>
                     <td></td>
                 </tr>
@@ -93,6 +96,8 @@
                     String fileName = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
                     String extension = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILETYPE);
                     Long fileId = (long) log.getKey().getId();
+                    double fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
+                    String size = Help.format(fileSize, 2);
 
 
             %>
@@ -102,6 +107,7 @@
                     <td><input type="checkbox" name="file[]"></td>
                     <td><i class="fa fa-file"></i></td>
                     <td><%=fileName%></td>
+                    <td><%=size%></td>
                     <td><a href='trash?fileId=<%=fileId%>&&action=undo'>Undo</a></td>
                     <td><a href='trash?fileId=<%=fileId%>&&action=delete'>permanent delete</a></td>
                 </tr>

@@ -22,6 +22,7 @@ public class Defs {
     public static final String ENTITY_PROPERTY_FILESIZE = "fileSize";
     public static final String ENTITY_PROPERTY_PARENT = "parentFolder";
     public static final String ENTITY_PROPERTY_FILETYPE = "typeFile";
+    //public static final String ENTITY_PROPERTY_FILESIZE = "fileSize";
     public static final String ENTITY_PROPERTY_ACCESSREAD = "accessRead";
     public static final String ENTITY_PROPERTY_FULLACCESS = "fullAccess";
     public static final String ENTITY_PROPERTY_CREATED = "created";
@@ -44,7 +45,7 @@ public class Defs {
     public static final String DATASTORE_KIND_USER_STRING = "Users";
     public static final String DATASTORE_KIND_FILES_STRING = "Files";
     public static final String DATASTORE_KIND_TRASH_STRING = "Trash";
-    public static final long DATASTORE_MAX_STORAGE_USER = 300;
+    public static final long DATASTORE_MAX_STORAGE_USER = 104857600;
     public static final String PARAM_USER_KEY_STRING = "userKey";
     public static final String BUCKET_STRING = "kid-cloud-computing-zina-2018.appspot.com";
 }

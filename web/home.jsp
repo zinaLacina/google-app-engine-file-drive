@@ -3,6 +3,7 @@
     Created on : Jul 22, 2018, 4:32:20 AM
     Author     : lacinazina
 --%>
+<%@page import="helper.Help"%>
 <%@page import="com.google.appengine.repackaged.org.apache.commons.logging.Log"%>
 <%@page import="java.util.NoSuchElementException"%>
 <%@page import="com.google.appengine.api.datastore.Query.Filter"%>
@@ -77,6 +78,7 @@
                         <td><input type="checkbox"  id="all"></td>
                         <td>Type</td>
                         <td><b>File name</b></td>
+                        <td>Size</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -89,6 +91,8 @@
                         String fileName = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
                         String extension = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILETYPE);
                         Long fileId = (long) log.getKey().getId();
+                        double fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
+                        String size = Help.format(fileSize, 2);
 
 
                 %>
@@ -98,10 +102,11 @@
                         <td><input type="checkbox" name="file[]"></td>
                         <td><i class="fa fa-file"></i></td>
                         <td><%=fileName%></td>
+                        <td><%=size%></td>
                         <td><a href='download?fileName=<%=fileName%>'>download</a></td>
                         <td><a href='delete?fileName=<%=fileName%>&&fileId=<%=fileId%>'>delete</a></td>
                     </tr>
-                    <% } else { %>
+                    <% } else {%>
 
                     <tr>
                         <td><input type="checkbox" name="file[]"></td>

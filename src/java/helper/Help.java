@@ -31,6 +31,18 @@ import org.apache.commons.io.FilenameUtils;
  * @author lacinazina
  */
 public class Help {
+    
+    public static String format(double bytes, int digits) {
+        String[] dictionary = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        int index = 0;
+        for (index = 0; index < dictionary.length; index++) {
+            if (bytes < 1024) {
+                break;
+            }
+            bytes = bytes / 1024;
+        }
+        return String.format("%." + digits + "f", bytes) + " " + dictionary[index];
+    }
 
     public boolean getRecent(Date date) {
         Date today = new Date();

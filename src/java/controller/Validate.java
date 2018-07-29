@@ -8,6 +8,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Query;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -61,6 +62,9 @@ public class Validate extends HttpServlet {
                 (String) userEntity.getProperty(Defs.ENTITY_PROPERTY_USERNAME_STRING),
                 "");
         user.setUserId(userEntity.getKey().getId());
+        user.setRemainMemory((long)userEntity.getProperty(Defs.ENTITY_PROPERTY_QUOTA));
+        user.setDateCreated((Date)userEntity.getProperty(Defs.ENTITY_PROPERTY_CREATED));
+      
         //user.setRemainMemory(userEntity.getProperty(Defs.ENTITY_PROPERTY_QUOTA));
         //Set the user information in the session context for future requests.
         //The password is not included.

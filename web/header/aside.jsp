@@ -3,7 +3,23 @@
     Created on : Jul 21, 2018, 11:08:51 PM
     Author     : lacinazina
 --%>
+<%@page import="helper.Help"%>
+<%@page import="model.User"%>
+<%@page import="config.Defs"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
+<% 
+User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
+    
+    long userId;
+    if (thisUser != null) {
+        userId = thisUser.getUserId();
+        long resultQuota = thisUser.getRemainMemory();
+        long totalSize = Defs.DATASTORE_MAX_STORAGE_USER;
+        long percentage = resultQuota/totalSize;
+        String quota = Help.format((totalSize-resultQuota), 2);
+%>
+
 <aside class="main-sidebar">
 
     <!-- sidebar: style can be found in sidebar.less -->
@@ -32,11 +48,11 @@
         <ul class="sidebar-menu menu-down">
             <li><a href="trash.jsp"><i class="fa fa-trash"></i> <span>Trash</span></a></li>
             <li class="progress-size">
-                <p>7 MB used</p>
+                <p><%=quota%> used</p>
            
                 <div class="progress">
                     <i class="fa fa-adjust"></i>
-                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="300"></div>
+                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width:<%=percentage%>%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="300"></div>
                 </div>
             </li>
         </ul>
@@ -44,3 +60,6 @@
     </section>
     <!-- /.sidebar -->
 </aside>
+<% 
+}
+%>

@@ -8,7 +8,6 @@ package controller;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -18,8 +17,6 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import config.Defs;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -119,6 +116,8 @@ public class Trash extends HttpServlet {
                 Entity result = pq0.asSingleEntity();
                 if (result != null) {
                     datastore.delete(result.getKey());
+                    //Delete file from the bucket
+      
                     
                     session.setAttribute(Defs.SESSION_MESSAGE_STRING, "The file indicated was deleted!");
                     response.sendRedirect(Defs.LIST_PAGE_STRING);
