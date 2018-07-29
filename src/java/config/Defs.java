@@ -43,6 +43,7 @@ public class Defs {
     public static final String PARAM_FILENAME_STRING = "fileName";
     public static final String DATASTORE_KIND_USER_STRING = "Users";
     public static final String DATASTORE_KIND_FILES_STRING = "Files";
+    public static final String DATASTORE_KIND_TRASH_STRING = "Trash";
     public static final long DATASTORE_MAX_STORAGE_USER = 300;
     public static final String PARAM_USER_KEY_STRING = "userKey";
     public static final String BUCKET_STRING = "kid-cloud-computing-zina-2018.appspot.com";

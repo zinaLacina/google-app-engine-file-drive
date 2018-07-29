@@ -4,7 +4,19 @@
     Author     : Lacina ZINA
 --%>
 
-
+<%@page import="com.google.appengine.repackaged.org.apache.commons.logging.Log"%>
+<%@page import="java.util.NoSuchElementException"%>
+<%@page import="com.google.appengine.api.datastore.Query.Filter"%>
+<%@page import="com.google.appengine.api.datastore.Query.FilterPredicate"%>
+<%@page import="com.google.appengine.api.datastore.Query.FilterOperator"%>
+<%@page import="com.google.appengine.api.datastore.Key"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.List"%>
+<%@page import="com.google.appengine.api.datastore.FetchOptions"%>
+<%@page import="com.google.appengine.api.datastore.Query"%>
+<%@page import="com.google.appengine.api.datastore.Entity"%>
+<%@page import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
+<%@page import="com.google.appengine.api.datastore.DatastoreService"%>
 <%@page import="config.Defs"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.User" %>
@@ -14,10 +26,12 @@
 <%
     //User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
     String name;
+    long userId;
     User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
             if (thisUser != null) {
                 name = thisUser.getFirstName() + " " + thisUser.getLastName();
                 pageContext.setAttribute("userIn", thisUser);
+                userId = thisUser.getUserId();
 %>
 
 <jsp:include page="header/header.jsp"/>
@@ -51,7 +65,74 @@
         -------------------------->
   
         <p id="welcome"></p>
-            Recent files
+        <h3>Recent files</h3>
+        <div class="col-sm-8">
+            <!-- List of files -->
+            <table class="table table-hover">
+                <%
+
+                    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+                    Filter currentIdUser = new FilterPredicate(Defs.ENTITY_PROPERTY_OWNER, FilterOperator.EQUAL, userId);
+                    Query fileQuery = new Query(Defs.DATASTORE_KIND_FILES_STRING).setFilter(currentIdUser);
+                    List<Entity> files = datastore.prepare(fileQuery).asList(FetchOptions.Builder.withDefaults());
+                    if (!files.isEmpty()) {
+                        Iterator<Entity> allFiles = files.iterator();
+                %>
+                <thead>
+                    <tr>
+                        <td><input type="checkbox"  id="all"></td>
+                        <td>Type</td>
+                        <td><b>File name</b></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </thead>
+
+                <%
+                    while (allFiles.hasNext()) {
+                        Entity log = allFiles.next();
+                        long isFolder = (long) log.getProperty(Defs.ENTITY_PROPERTY_FOLDER);
+                        String fileName = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
+                        String extension = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILETYPE);
+                        Long fileId = (long) log.getKey().getId();
+
+
+                %>
+                <tbody>
+                    <% if (isFolder == 0) {%>
+                    <tr>
+                        <td><input type="checkbox" name="file[]"></td>
+                        <td><i class="fa fa-file"></i></td>
+                        <td><%=fileName%></td>
+                        <td><a href='download?fileName=<%=fileName%>'>download</a></td>
+                        <td><a href='delete?fileName=<%=fileName%>&&fileId=<%=fileId%>'>delete</a></td>
+                    </tr>
+                    <% } else { %>
+
+                    <tr>
+                        <td><input type="checkbox" name="file[]"></td>
+                        <td><i class="fa fa-folder-o"></i></td>
+                        <td><%=fileName%></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <% } %>
+                </tbody>
+                <%
+                    }
+                } else {
+                %>
+                <div class="alert alert-warning">
+                    <strong>You don't yet have file please upload your files!</strong>
+                </div>
+                <%
+                    }
+                %>
+            </table>
+        </div>
+        <div class="col-sm-4">
+            <!-- File detail place -->
+        </div>
 
     </section>
     <!-- /.content -->

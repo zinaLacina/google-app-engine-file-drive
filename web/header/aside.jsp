@@ -30,7 +30,7 @@
             <li><a href="shareOther.jsp"><i class="fa fa-share"></i> <span>Share with others</span></a></li>
         </ul>
         <ul class="sidebar-menu menu-down">
-            <li><a href="deleted.jsp"><i class="fa fa-trash"></i> <span>Deleted</span></a></li>
+            <li><a href="trash.jsp"><i class="fa fa-trash"></i> <span>Trash</span></a></li>
             <li class="progress-size">
                 <p>7 MB used</p>
            

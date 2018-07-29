@@ -49,16 +49,16 @@
         <servlet-class>controller.ShareOther</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>Deleted</servlet-name>
-        <servlet-class>controller.Deleted</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>Memory</servlet-name>
         <servlet-class>controller.Memory</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>File</servlet-name>
         <servlet-class>controller.File</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Trash</servlet-name>
+        <servlet-class>controller.Trash</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
@@ -80,13 +80,14 @@
         <servlet-name>Upload</servlet-name>
         <url-pattern>/upload</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Delete</servlet-name>
-        <url-pattern>/delete</url-pattern>
-    </servlet-mapping>
+    
     <servlet-mapping>
         <servlet-name>Download</servlet-name>
         <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Delete</servlet-name>
+        <url-pattern>/delete</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Folder</servlet-name>
@@ -109,16 +110,16 @@
         <url-pattern>/shareOther</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>Deleted</servlet-name>
-        <url-pattern>/deleted</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>Memory</servlet-name>
         <url-pattern>/memory</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>File</servlet-name>
         <url-pattern>/file</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Trash</servlet-name>
+        <url-pattern>/trash</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
