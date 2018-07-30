@@ -22,7 +22,7 @@ public class Defs {
     public static final String ENTITY_PROPERTY_FILESIZE = "fileSize";
     public static final String ENTITY_PROPERTY_PARENT = "parentFolder";
     public static final String ENTITY_PROPERTY_FILETYPE = "typeFile";
-    //public static final String ENTITY_PROPERTY_FILESIZE = "fileSize";
+    public static final String ENTITY_PROPERTY_FAVORITE = "favorite";
     public static final String ENTITY_PROPERTY_ACCESSREAD = "accessRead";
     public static final String ENTITY_PROPERTY_FULLACCESS = "fullAccess";
     public static final String ENTITY_PROPERTY_CREATED = "created";

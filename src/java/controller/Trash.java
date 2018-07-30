@@ -8,6 +8,7 @@ package controller;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -17,6 +18,8 @@ import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
 import config.Defs;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +43,7 @@ public class Trash extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, EntityNotFoundException {
 
         //Prepare the session context.
         HttpSession session = request.getSession(true);
@@ -85,6 +88,8 @@ public class Trash extends HttpServlet {
                     fichier.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, result.getProperty(Defs.ENTITY_PROPERTY_FILETYPE));
                     fichier.setProperty(Defs.ENTITY_PROPERTY_FOLDER, result.getProperty(Defs.ENTITY_PROPERTY_FOLDER));
                     fichier.setProperty(Defs.ENTITY_PROPERTY_PARENT, result.getProperty(Defs.ENTITY_PROPERTY_PARENT));
+                    fichier.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, result.getProperty(Defs.ENTITY_PROPERTY_FILESIZE));
+                    fichier.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, result.getProperty(Defs.ENTITY_PROPERTY_FAVORITE));
                     datastore.put(fichier);
                     //If the file name was found then delete it from the Datastore.
                     datastore.delete(result.getKey());
@@ -115,10 +120,24 @@ public class Trash extends HttpServlet {
                 PreparedQuery pq0 = datastore.prepare(fileQuery);
                 Entity result = pq0.asSingleEntity();
                 if (result != null) {
+                    Key userKey = KeyFactory.createKey(Defs.DATASTORE_KIND_USER_STRING, currentUSer.getUserId());
+
+                    Entity user = datastore.get(userKey);
+                    long fileSize = (long) result.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
+                    
+                    
+
+                    //Update the remain memory of the user in the database
+                    //long resultQuota = (long) user.getProperty(Defs.ENTITY_PROPERTY_QUOTA) + fileSize;
+                    long resultQuota = currentUSer.getRemainMemory() + fileSize;
+                    user.setProperty(Defs.ENTITY_PROPERTY_QUOTA, resultQuota);
+                    datastore.put(user);
+                    currentUSer.setRemainMemory(currentUSer.getRemainMemory() + fileSize);
+                    session.setAttribute(Defs.SESSION_USER_STRING, currentUSer);
+
                     datastore.delete(result.getKey());
                     //Delete file from the bucket
-      
-                    
+
                     session.setAttribute(Defs.SESSION_MESSAGE_STRING, "The file indicated was deleted!");
                     response.sendRedirect(Defs.LIST_PAGE_STRING);
                 } else {
@@ -147,7 +166,11 @@ public class Trash extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(Trash.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -161,7 +184,11 @@ public class Trash extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(Trash.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

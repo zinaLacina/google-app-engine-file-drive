@@ -67,6 +67,8 @@ public class Delete extends HttpServlet {
                 trash.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FILETYPE));
                 trash.setProperty(Defs.ENTITY_PROPERTY_FOLDER, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FOLDER));
                 trash.setProperty(Defs.ENTITY_PROPERTY_PARENT, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_PARENT));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FILESIZE));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FAVORITE));
                 datastore.put(trash);
                 //If the file name was found then delete it from the Datastore.
                 datastore.delete(dbFiles.get(0).getKey());

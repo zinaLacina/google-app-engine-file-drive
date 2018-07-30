@@ -93,7 +93,7 @@ public class Upload extends HttpServlet {
                     FileItemStream fileItem = fileItemIterator.next();
                     String fileNameparam = fileItem.getName();
                     //Prepare the file name in GCS format.
-                    GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, fileNameparam);
+                    GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, currentUSer.getUserName()+"/"+ fileNameparam);
                     GcsOutputChannel outputChannel;
                     //Read the contents from the request and send them to GCS.
                     outputChannel = gcsService.createOrReplace(fileName, instance);
@@ -107,7 +107,7 @@ public class Upload extends HttpServlet {
                     if (fileSize <= remainSize) {
                         //long fileSizeMb = fileSize/1024;
                         currentUSer.setRemainMemory(currentUSer.getRemainMemory() - fileSize);
-                        session.setAttribute(Defs.SESSION_USER_STRING, currentUSer);
+                        
 
                         //Update the remain memory of the user in the database
                         Key userKey = KeyFactory.createKey(Defs.DATASTORE_KIND_USER_STRING, currentUSer.getUserId());
@@ -115,6 +115,7 @@ public class Upload extends HttpServlet {
                         Entity result = datastore.get(userKey);
                         long resultQuota = currentUSer.getRemainMemory() - fileSize;
                         result.setProperty(Defs.ENTITY_PROPERTY_QUOTA, resultQuota);
+                        session.setAttribute(Defs.SESSION_USER_STRING, currentUSer);
                         datastore.put(result);
 
                         //We will use the table 'Files' to save the file name.
@@ -128,12 +129,13 @@ public class Upload extends HttpServlet {
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, fileSize);
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER, 0);
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_PARENT, 0);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, 0);
 
                         //No need for filters.
                         datastore.put(fileEntity);
                         //Place a suitable message in the session context and redirect the browser to the page which
                         //lists the files.
-                        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "File upload completed.");
+                        //session.setAttribute(Defs.SESSION_MESSAGE_STRING, "File upload completed.");
                         response.sendRedirect(Defs.LIST_PAGE_STRING);
                     } else {
                         session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Your quota is finish, or the file is bigger than the rest of your quota");

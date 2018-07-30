@@ -16,7 +16,7 @@ User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
         userId = thisUser.getUserId();
         long resultQuota = thisUser.getRemainMemory();
         long totalSize = Defs.DATASTORE_MAX_STORAGE_USER;
-        long percentage = resultQuota/totalSize;
+        double percentage = ((totalSize-resultQuota)/totalSize)*100;
         String quota = Help.format((totalSize-resultQuota), 2);
 %>
 
@@ -46,9 +46,10 @@ User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
             <li><a href="shareOther.jsp"><i class="fa fa-share"></i> <span>Share with others</span></a></li>
         </ul>
         <ul class="sidebar-menu menu-down">
+            <li><a href="#"><i class="fa fa-fire"></i> <span>Clean storage</span></a></li>
             <li><a href="trash.jsp"><i class="fa fa-trash"></i> <span>Trash</span></a></li>
             <li class="progress-size">
-                <p><%=quota%> used</p>
+                <p><%=quota%> used /100 MB</p>
            
                 <div class="progress">
                     <i class="fa fa-adjust"></i>

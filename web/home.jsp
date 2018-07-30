@@ -78,7 +78,9 @@
                         <td><input type="checkbox"  id="all"></td>
                         <td>Type</td>
                         <td><b>File name</b></td>
+                        <td>Favorite</td>
                         <td>Size</td>
+                        <td>Action</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -91,18 +93,40 @@
                         String fileName = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
                         String extension = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILETYPE);
                         Long fileId = (long) log.getKey().getId();
-                        double fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
-                        String size = Help.format(fileSize, 2);
+                        long favoris = (long)log.getProperty(Defs.ENTITY_PROPERTY_FAVORITE);
+                        String star ="<i class='fa fa-star-o'></i>";
+                        String favoriteLabel = "favorite";
+                        if(favoris==1){
+                            star ="<i class='fa fa-star'></i>";
+                            favoriteLabel = "unfavorite";
+                        }
 
 
                 %>
                 <tbody>
-                    <% if (isFolder == 0) {%>
+                    <%                        
+                        if (isFolder == 0) {
+                            double fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
+                            String size = Help.format(fileSize, 2);
+                    %>
                     <tr>
                         <td><input type="checkbox" name="file[]"></td>
                         <td><i class="fa fa-file"></i></td>
                         <td><%=fileName%></td>
+                        <td><%=star%></td>
                         <td><%=size%></td>
+                        <td>
+                            <ul class="menu-home">
+                                <li class="dropdown">
+                                    <a href="#" class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown"><i class="fa fa-ellipsis-h"></i></a>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                                        <li><a href="#"><i class="fa fa-cut"></i>Move into folder</a></li>
+                                        <li><a href="folder.jsp"><i class="fa fa-share"></i>Share</a></li>
+                                        <li><a href="favorite?fileId=<%=fileId%>&&action=<%=favoriteLabel%>"><i class="fa fa-star"></i><%=favoriteLabel%></a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </td>
                         <td><a href='download?fileName=<%=fileName%>'>download</a></td>
                         <td><a href='delete?fileName=<%=fileName%>&&fileId=<%=fileId%>'>delete</a></td>
                     </tr>

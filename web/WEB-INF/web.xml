@@ -60,6 +60,10 @@
         <servlet-name>Trash</servlet-name>
         <servlet-class>controller.Trash</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Favoris</servlet-name>
+        <servlet-class>controller.Favoris</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/register</url-pattern>
@@ -80,7 +84,6 @@
         <servlet-name>Upload</servlet-name>
         <url-pattern>/upload</url-pattern>
     </servlet-mapping>
-    
     <servlet-mapping>
         <servlet-name>Download</servlet-name>
         <url-pattern>/download</url-pattern>
@@ -120,6 +123,10 @@
     <servlet-mapping>
         <servlet-name>Trash</servlet-name>
         <url-pattern>/trash</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Favoris</servlet-name>
+        <url-pattern>/favoris</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

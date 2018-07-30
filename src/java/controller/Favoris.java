@@ -13,6 +13,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import config.Defs;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -26,7 +27,7 @@ import model.User;
  *
  * @author lacinazina
  */
-public class Favorite extends HttpServlet {
+public class Favoris extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -51,7 +52,7 @@ public class Favorite extends HttpServlet {
                 && !action.equals("")) {
             if (fileId != 0) {
                 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-                Key fileKey = KeyFactory.createKey(Defs.DATASTORE_KIND_FILES_STRING, fileId);
+                Key fileKey = KeyFactory.createKey(Defs.DATASTORE_KIND_FILES_STRING, currentUSer.getUserId());
                 //Favoriting
                 if (action.equals("favorite")) {
                     //Update the remain memory of the user in the database

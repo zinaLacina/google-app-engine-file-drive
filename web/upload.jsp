@@ -83,10 +83,7 @@
 
 
 <jsp:include page="footer/footer.jsp"/>
-<script>
-    document.getElementById("welcome").innerHTML = "${fn:escapeXml(userIn.firstName)}";
 
-</script>
 <jsp:include page="footer/close.jsp"/>
 <%
     } else {

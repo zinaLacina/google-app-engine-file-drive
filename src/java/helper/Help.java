@@ -31,9 +31,17 @@ import org.apache.commons.io.FilenameUtils;
  * @author lacinazina
  */
 public class Help {
-    
+
+    public static int minutesDiff(Date earlierDate, Date laterDate) {
+        if (earlierDate == null || laterDate == null) {
+            return 0;
+        }
+
+        return (int) ((laterDate.getTime() / 60000) - (earlierDate.getTime() / 60000));
+    } 
+
     public static String format(double bytes, int digits) {
-        String[] dictionary = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+        String[] dictionary = {"bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
         int index = 0;
         for (index = 0; index < dictionary.length; index++) {
             if (bytes < 1024) {

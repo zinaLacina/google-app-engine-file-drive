@@ -28,7 +28,7 @@
     //User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
     String name;
     User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-    
+
     long userId;
     if (thisUser != null) {
         name = thisUser.getFirstName() + " " + thisUser.getLastName();
@@ -69,7 +69,6 @@
 
         <p id="welcome"></p>
         <%
-
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
             Filter currentIdUser = new FilterPredicate(Defs.ENTITY_PROPERTY_OWNER, FilterOperator.EQUAL, userId);
             Query fileQuery = new Query(Defs.DATASTORE_KIND_TRASH_STRING).setFilter(currentIdUser);
@@ -96,13 +95,14 @@
                     String fileName = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
                     String extension = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILETYPE);
                     Long fileId = (long) log.getKey().getId();
-                    double fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
-                    String size = Help.format(fileSize, 2);
-
 
             %>
             <tbody>
-                <% if (isFolder == 0) {%>
+                <%                    
+                    if (isFolder == 0) {
+                        double fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
+                        String size = Help.format(fileSize, 2);
+                %>
                 <tr>
                     <td><input type="checkbox" name="file[]"></td>
                     <td><i class="fa fa-file"></i></td>
@@ -126,10 +126,11 @@
                 }
             } else {
             %>
-            <div class="alert alert-warning">
-                <strong>No deleted files</strong>
-            </div>
+
         </table>
+        <div class="alert alert-warning">
+            <strong>No deleted files</strong>
+        </div>
         <%
             }
         %>
@@ -149,4 +150,3 @@
         response.sendRedirect(Defs.LOGIN_PAGE_STRING);
     }
 %>
-
