@@ -8,6 +8,11 @@ package controller;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
 import config.Defs;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,12 +48,21 @@ public class Folder extends HttpServlet {
         User currentUSer = (User) session.getAttribute(Defs.SESSION_USER_STRING);
         List<Long> fullAccess = new ArrayList<>();
         List<Long> readAccess = new ArrayList<>();
-        if (currentUSer != null) {
+        String folderName = request.getParameter("folderName");
+        GcsService gcsService = GcsServiceFactory.createGcsService(new RetryParams.Builder()
+                .initialRetryDelayMillis(10)
+                .retryMaxAttempts(10)
+                .totalRetryPeriodMillis(15000)
+                .build());
+        GcsFileOptions instance = GcsFileOptions.getDefaultInstance();
+        //Butcket name
+        String bucket = Defs.BUCKET_STRING;
+        if (currentUSer != null&&!folderName.isEmpty()) {
             //System.out.println(fileUpload.getFileSizeMax());
             //File size controle
             fullAccess.add(currentUSer.getUserId());
             readAccess.add(currentUSer.getUserId());
-            String folderName = request.getParameter("folderName");
+            
 
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -59,9 +73,13 @@ public class Folder extends HttpServlet {
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_FULLACCESS, fullAccess);
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_ACCESSREAD, readAccess);
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, "none");
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, 0);
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER, 1);
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_PARENT, 0);
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, 0);
 
+            GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, currentUSer.getUserName()+"/"+ folderName);
+            gcsService.createOrReplace(fileName, instance);
             //No need for filters.
             datastore.put(fileEntity);
 

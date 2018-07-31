@@ -16,6 +16,10 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
 import config.Defs;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -52,6 +56,17 @@ public class Trash extends HttpServlet {
         //Get the file name from the URL
         String action = request.getParameter("action");
         long fileId = new Long(request.getParameter("fileId"));
+
+        //Preparing a GcsService
+        //Prepare the GCS service.
+        GcsService gcsService = GcsServiceFactory.createGcsService(new RetryParams.Builder()
+                .initialRetryDelayMillis(10)
+                .retryMaxAttempts(10)
+                .totalRetryPeriodMillis(15000)
+                .build());
+        //Butcket name
+        String bucket = Defs.BUCKET_STRING;
+
         //Make sure that the user has already loggedin and that the fileName parameter is not empty/null.
         if (currentUSer != null
                 && action != null
@@ -124,8 +139,6 @@ public class Trash extends HttpServlet {
 
                     Entity user = datastore.get(userKey);
                     long fileSize = (long) result.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
-                    
-                    
 
                     //Update the remain memory of the user in the database
                     //long resultQuota = (long) user.getProperty(Defs.ENTITY_PROPERTY_QUOTA) + fileSize;
@@ -134,6 +147,14 @@ public class Trash extends HttpServlet {
                     datastore.put(user);
                     currentUSer.setRemainMemory(currentUSer.getRemainMemory() + fileSize);
                     session.setAttribute(Defs.SESSION_USER_STRING, currentUSer);
+                    try {
+                        //delete completely the file
+                        String filename = (String) result.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
+                        gcsService.delete(new GcsFilename(bucket, currentUSer.getUserName() + "/" + filename));
+                    } catch (IOException e) {
+                        //Error handling
+                        System.out.println(e);
+                    }
 
                     datastore.delete(result.getKey());
                     //Delete file from the bucket
