@@ -25,9 +25,10 @@
     User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
     String name;
     long userId;
+    String username;
     if (currentUser != null) {
         name = currentUser.getFirstName() + " " + currentUser.getLastName();
-
+        username=currentUser.getUserName();
         userId = currentUser.getUserId();
 %>
 
@@ -78,6 +79,7 @@
                         <td><input type="checkbox"  id="all"></td>
                         <td>Type</td>
                         <td><b>File name</b></td>
+                        <td>File type</td>
                         <td>Favorite</td>
                         <td>Size</td>
                         <td>Action</td>
@@ -113,6 +115,7 @@
                         <td><input type="checkbox" name="file[]"></td>
                         <td><i class="fa fa-file"></i></td>
                         <td><%=fileName%></td>
+                        <td><%=extension%></td>
                         <td><%=star%></td>
                         <td><%=size%></td>
                         <td>
@@ -120,14 +123,14 @@
                                 <li class="dropdown">
                                     <a href="#" class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown"><i class="fa fa-ellipsis-h"></i></a>
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-                                        <li><a href="#"><i class="fa fa-cut"></i>Move into folder</a></li>
-                                        <li><a href="folder.jsp"><i class="fa fa-share"></i>Share</a></li>
+                                        <li><a href="movetofolder?fileId=<%=fileId%>"><i class="fa fa-cut"></i>Move into folder</a></li>
+                                        <li><a href="share?fileId=<%=fileId%>"><i class="fa fa-share"></i>Share</a></li>
                                         <li><a href="favorite?fileId=<%=fileId%>&&action=<%=favoriteLabel%>"><i class="fa fa-star"></i><%=favoriteLabel%></a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </td>
-                        <td><a href='download?fileName=<%=fileName%>'>download</a></td>
+                        <td><a href='download?fileName=<%=fileName%>&&fileId=<%=fileId%>'>download</a></td>
                         <td><a href='delete?fileName=<%=fileName%>&&fileId=<%=fileId%>'>delete</a></td>
                     </tr>
                     <% } else {%>

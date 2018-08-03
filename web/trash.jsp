@@ -109,7 +109,7 @@
                     <td><%=fileName%></td>
                     <td><%=size%></td>
                     <td><a href='trash?fileId=<%=fileId%>&&action=undo'>Undo</a></td>
-                    <td><a href='trash?fileId=<%=fileId%>&&action=delete'>permanent delete</a></td>
+                    <td><a href='trash?fileId=<%=fileId%>&&action=delete'>definitely delete</a></td>
                 </tr>
                 <% } else {%>
 

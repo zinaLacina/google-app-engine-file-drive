@@ -42,11 +42,12 @@ User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
             <li><a href="home.jsp"><i class="fa fa-folder"></i> <span>All Files</span></a></li>
             <li><a href="recent.jsp"><i class="fa fa-clock-o"></i> <span>Recent</span></a></li>
             <li><a href="favorite.jsp"><i class="fa fa-star"></i> <span>Favorites</span></a></li>
-            <li><a href="shareMe.jsp"><i class="fa fa-share"></i> <span>Share with you</span></a></li>
+            <li><a href="shareMe.jsp"><i class="fa fa-share"></i> <span>Share with me</span></a></li>
             <li><a href="shareOther.jsp"><i class="fa fa-share"></i> <span>Share with others</span></a></li>
         </ul>
         <ul class="sidebar-menu menu-down">
-            <li><a href="#"><i class="fa fa-fire"></i> <span>Clean storage</span></a></li>
+            <li><a href="trash?action=cleanup" onclick="return confirm('This action will delete all the trash files up to 10 minutes.Are you sure is that you want?')">
+                    <i class="fa fa-fire"></i> <span>Clean storage</span></a></li>
             <li><a href="trash.jsp"><i class="fa fa-trash"></i> <span>Trash</span></a></li>
             <li class="progress-size">
                 <p><%=quota%> used /100 MB</p>

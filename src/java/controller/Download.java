@@ -1,5 +1,11 @@
 package controller;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import config.Defs;
 import model.User;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
@@ -7,9 +13,12 @@ import com.google.appengine.tools.cloudstorage.GcsInputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appengine.tools.cloudstorage.RetryParams;
+import helper.Help;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +44,7 @@ public class Download extends HttpServlet {
   private static final int BUFFER_SIZE = 2 * 1024 * 1024;
 
   protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-          throws ServletException, IOException {
+          throws ServletException, IOException, EntityNotFoundException {
     //Prepare the session context.
     HttpSession session = request.getSession(true);
     //Get the user information from the session context.
@@ -43,9 +52,23 @@ public class Download extends HttpServlet {
     //Get the file name from the URL
     String fileNameParam = request.getParameter(Defs.PARAM_FILENAME_STRING);
     //Make sure that the user has already loggedin and that the fileName parameter is not empty/null.
-    if (currentUSer != null
-            && fileNameParam != null
-            && !fileNameParam.equals("")) {
+    long fileId = new Long(request.getParameter("fileId"));
+        //Make sure that the user has already loggedin and that the fileName parameter is not empty/null.
+        if (currentUSer != null
+                && fileNameParam != null
+                && !fileNameParam.equals("")
+                && fileId>=0) {
+            
+            //Get the real file using the id of the file
+            //Prepare the Datastore service.
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            
+            //get the file using the key
+            Key fileKey = KeyFactory.createKey(Defs.DATASTORE_KIND_FILES_STRING, fileId);
+            Entity dbFiles = datastore.get(fileKey);
+            //String folderName = (String)dbFiles.getProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME);
+            String folderName = Help.userFolder(currentUSer);
+            
       //Prepare Google Cloud Storage service.
       GcsService gcsService = GcsServiceFactory.createGcsService(new RetryParams.Builder()
               .initialRetryDelayMillis(10)
@@ -53,7 +76,8 @@ public class Download extends HttpServlet {
               .totalRetryPeriodMillis(15000)
               .build());
       //Prepare the file name in GCS format.
-      GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, fileNameParam);
+      //String filename = folderName+"/"+fileNameParam;
+      GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, folderName+"/"+fileNameParam);
       GcsInputChannel readChannel = gcsService.openPrefetchingReadChannel(fileName, 0, BUFFER_SIZE);
       byte[] byteBuffer = new byte[BUFFER_SIZE];
       ServletOutputStream outStream;
@@ -94,7 +118,11 @@ public class Download extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
-    processRequest(request, response);
+      try {
+          processRequest(request, response);
+      } catch (EntityNotFoundException ex) {
+          Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+      }
   }
 
   /**
@@ -108,7 +136,11 @@ public class Download extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
-    processRequest(request, response);
+      try {
+          processRequest(request, response);
+      } catch (EntityNotFoundException ex) {
+          Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+      }
   }
 
   /**

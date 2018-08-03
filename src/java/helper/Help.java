@@ -18,13 +18,11 @@ import config.Defs;
 import model.*;
 import java.io.File;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import model.User;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -38,7 +36,7 @@ public class Help {
         }
 
         return (int) ((laterDate.getTime() / 60000) - (earlierDate.getTime() / 60000));
-    } 
+    }
 
     public static String format(double bytes, int digits) {
         String[] dictionary = {"bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"};
@@ -120,4 +118,34 @@ public class Help {
         return result;
     }
 
+    public static List<User> getUser() throws ParseException {
+        DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+        Query usersQuery = new Query(Defs.DATASTORE_KIND_USER_STRING);
+        //Query folderQuery = new Query(Defs.ENTITY_PROPERTY_FOLDER).setFilter(1);
+        List<Entity> users = datastore.prepare(usersQuery).asList(FetchOptions.Builder.withDefaults());
+
+        List<User> result = new ArrayList<>();
+        if (!users.isEmpty()) {
+            Iterator<Entity> allUsers = users.iterator();
+
+            while (allUsers.hasNext()) {
+                Entity log = allUsers.next();
+                User user = new User((String) log.getProperty(Defs.ENTITY_PROPERTY_FIRSTNAME_STRING),
+                        (String) log.getProperty(Defs.ENTITY_PROPERTY_LASTNAME_STRING),
+                        (String) log.getProperty(Defs.PARAM_USERNAME_STRING),
+                        "");
+
+                user.setUserId(log.getKey().getId());
+
+                result.add(user);
+
+            }
+        }
+        return result;
+    }
+
+    public static String userFolder(User user){
+        return user.getFirstName()+""+user.getUserId();
+    }
 }

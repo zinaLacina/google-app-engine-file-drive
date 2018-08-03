@@ -5,19 +5,36 @@
 --%>
 
 
+<%@page import="java.util.ArrayList"%>
+<%@page import="helper.Help"%>
+<%@page import="com.google.appengine.repackaged.org.apache.commons.logging.Log"%>
+<%@page import="java.util.NoSuchElementException"%>
+<%@page import="com.google.appengine.api.datastore.Query.Filter"%>
+<%@page import="com.google.appengine.api.datastore.Query.FilterPredicate"%>
+<%@page import="com.google.appengine.api.datastore.Query.FilterOperator"%>
+<%@page import="com.google.appengine.api.datastore.Key"%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.List"%>
+<%@page import="com.google.appengine.api.datastore.FetchOptions"%>
+<%@page import="com.google.appengine.api.datastore.Query"%>
+<%@page import="com.google.appengine.api.datastore.Entity"%>
+<%@page import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
+<%@page import="com.google.appengine.api.datastore.DatastoreService"%>
 <%@page import="config.Defs"%>
+<%@page import="model.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ page import="model.User" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <%
     //User currentUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
     String name;
     User thisUser = (User) session.getAttribute(Defs.SESSION_USER_STRING);
-            if (thisUser != null) {
-                name = thisUser.getFirstName() + " " + thisUser.getLastName();
-                pageContext.setAttribute("userIn", thisUser);
+
+    long userId;
+    if (thisUser != null) {
+        name = thisUser.getFirstName() + " " + thisUser.getLastName();
+        pageContext.setAttribute("userIn", thisUser);
+        userId = thisUser.getUserId();
 %>
 
 <jsp:include page="header/header.jsp"/>
@@ -46,27 +63,90 @@
     <!-- Main content -->
     <section class="content container-fluid">
 
+
         <!--------------------------
         | Your Page Content Here |
         -------------------------->
-    
+        <h3>Share with me</h3>
         <p id="welcome"></p>
-            Share with me
+        <%
+            DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+            //Filter currentIdUser = new FilterPredicate(Defs.ENTITY_PROPERTY_OWNER, FilterOperator.EQUAL, userId);
+            //Query fileQuery = new Query(Defs.DATASTORE_KIND_FILES_STRING).setFilter(currentIdUser);
+            Query fileQuery = new Query(Defs.DATASTORE_KIND_FILES_STRING);
+            List<Entity> files = datastore.prepare(fileQuery).asList(FetchOptions.Builder.withDefaults());
+            if (!files.isEmpty()) {
+                Iterator<Entity> allFiles = files.iterator();
+        %>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td><input type="checkbox"  id="all"></td>
+                    <td>Type</td>
+                    <td><b>File name</b></td>
+                    <td>Size</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+
+            <%
+                while (allFiles.hasNext()) {
+                    Entity log = allFiles.next();
+
+                    List<Long> fullAccessUsers = (ArrayList<Long>) log.getProperty(Defs.ENTITY_PROPERTY_FULLACCESS);
+                    long ownerId = (long) log.getProperty(Defs.ENTITY_PROPERTY_OWNER);
+
+                    if (fullAccessUsers.contains(userId) == true && ownerId != userId) {
+                        long isFolder = (long) log.getProperty(Defs.ENTITY_PROPERTY_FOLDER);
+                        String fileName = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
+                        String extension = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILETYPE);
+                        Long fileId = (long) log.getKey().getId();
+
+            %>
+            <tbody>
+                <%                    
+                    if (isFolder == 0) {
+                        double fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
+                        String size = Help.format(fileSize, 2);
+                %>
+                <tr>
+                    <td><input type="checkbox" name="file[]"></td>
+                    <td><i class="fa fa-file"></i></td>
+                    <td><%=fileName%></td>
+                    <td><%=size%></td>
+                    <td><%=extension%></td>
+                </tr>
+                <% } %>
+
+
+            </tbody>
+            <%
+                    }
+                }
+            } else {
+            %>
+
+        </table>
+        <div class="alert alert-warning">
+            <strong>No deleted files</strong>
+        </div>
+        <%
+            }
+        %>
 
     </section>
     <!-- /.content -->
 </div>
 
 
+
 <jsp:include page="footer/footer.jsp"/>
-<script>
-    document.getElementById("Welcome").innerHTML = "${fn:escapeXml(userIn.firstName)}";
-    
-</script>
+
 <jsp:include page="footer/close.jsp"/>
 <%
-        } else {
-            session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
-            response.sendRedirect(Defs.LOGIN_PAGE_STRING);
-        }
-    %>
+    } else {
+        session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Please login first!");
+        response.sendRedirect(Defs.LOGIN_PAGE_STRING);
+    }
+%>

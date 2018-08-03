@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
@@ -21,7 +22,11 @@ import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appengine.tools.cloudstorage.RetryParams;
 import config.Defs;
+import helper.Help;
 import java.io.IOException;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -55,7 +60,7 @@ public class Trash extends HttpServlet {
         User currentUSer = (User) session.getAttribute(Defs.SESSION_USER_STRING);
         //Get the file name from the URL
         String action = request.getParameter("action");
-        long fileId = new Long(request.getParameter("fileId"));
+        
 
         //Preparing a GcsService
         //Prepare the GCS service.
@@ -74,6 +79,7 @@ public class Trash extends HttpServlet {
 
             //Let undo the file
             if (action.equals("undo")) {
+                long fileId = new Long(request.getParameter("fileId"));
                 //Prepare the Datastore service.
                 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -105,6 +111,7 @@ public class Trash extends HttpServlet {
                     fichier.setProperty(Defs.ENTITY_PROPERTY_PARENT, result.getProperty(Defs.ENTITY_PROPERTY_PARENT));
                     fichier.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, result.getProperty(Defs.ENTITY_PROPERTY_FILESIZE));
                     fichier.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, result.getProperty(Defs.ENTITY_PROPERTY_FAVORITE));
+                    fichier.setProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME, result.getProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME));
                     datastore.put(fichier);
                     //If the file name was found then delete it from the Datastore.
                     datastore.delete(result.getKey());
@@ -119,6 +126,7 @@ public class Trash extends HttpServlet {
             }
             //Let us delete
             if (action.equals("delete")) {
+                long fileId = new Long(request.getParameter("fileId"));
                 DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
                 Key trashKey = KeyFactory.createKey("Trash", fileId);
@@ -147,10 +155,11 @@ public class Trash extends HttpServlet {
                     datastore.put(user);
                     currentUSer.setRemainMemory(currentUSer.getRemainMemory() + fileSize);
                     session.setAttribute(Defs.SESSION_USER_STRING, currentUSer);
+                    String folder = currentUSer.getFirstName()+""+currentUSer.getUserId();
                     try {
                         //delete completely the file
                         String filename = (String) result.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
-                        gcsService.delete(new GcsFilename(bucket, currentUSer.getUserName() + "/" + filename));
+                        gcsService.delete(new GcsFilename(bucket, folder + "/" + filename));
                     } catch (IOException e) {
                         //Error handling
                         System.out.println(e);
@@ -165,6 +174,58 @@ public class Trash extends HttpServlet {
                     //There was no such file name.
                     session.setAttribute(Defs.SESSION_MESSAGE_STRING, "No such file!");
                     response.sendRedirect(Defs.LIST_PAGE_STRING);
+                }
+            }
+
+            if (action.equals("cleanup")) {
+                DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+                long currentUserId = currentUSer.getUserId();
+                Filter fileFilter = new Query.FilterPredicate(Defs.ENTITY_PROPERTY_OWNER, Query.FilterOperator.EQUAL, currentUserId);
+                Query fileQuery = new Query(Defs.DATASTORE_KIND_TRASH_STRING);
+                fileQuery.setFilter(fileFilter);
+                ///Get the result
+                List<Entity> files = datastore.prepare(fileQuery).asList(FetchOptions.Builder.withDefaults());
+                if (!files.isEmpty()) {
+                    Iterator<Entity> allFiles = files.iterator();
+                    while (allFiles.hasNext()) {
+                        Entity log = allFiles.next();
+                        Date created = (Date) log.getProperty(Defs.ENTITY_PROPERTY_CREATED);
+                        int minutes = Help.minutesDiff(created, new Date());
+                        if (minutes > 10) {
+                            Key userKey = KeyFactory.createKey(Defs.DATASTORE_KIND_USER_STRING, currentUSer.getUserId());
+
+                            Entity user = datastore.get(userKey);
+                            long fileSize = (long) log.getProperty(Defs.ENTITY_PROPERTY_FILESIZE);
+
+                            //Update the remain memory of the user in the database
+                            //long resultQuota = (long) user.getProperty(Defs.ENTITY_PROPERTY_QUOTA) + fileSize;
+                            long resultQuota = currentUSer.getRemainMemory() + fileSize;
+                            user.setProperty(Defs.ENTITY_PROPERTY_QUOTA, resultQuota);
+                            datastore.put(user);
+                            currentUSer.setRemainMemory(currentUSer.getRemainMemory() + fileSize);
+                            session.setAttribute(Defs.SESSION_USER_STRING, currentUSer);
+                            String folder = currentUSer.getFirstName()+""+currentUSer.getUserId();
+                            try {
+                                //delete completely the file
+                                String filename = (String) log.getProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING);
+                                gcsService.delete(new GcsFilename(bucket, folder + "/" + filename));
+                            } catch (IOException e) {
+                                //Error handling
+                                System.out.println(e);
+                            }
+
+                            datastore.delete(log.getKey());
+                            //Delete file from the bucket
+
+                            session.setAttribute(Defs.SESSION_MESSAGE_STRING, "The files are deleted!");
+                            response.sendRedirect("trash.jsp");
+                        }
+                    }
+
+                } else {
+                    //If the user has not logged in then return him/her to the login page.
+                    session.setAttribute(Defs.SESSION_MESSAGE_STRING, "No files in the trash!");
+                    response.sendRedirect(Defs.HOME_PAGE_STRING);
                 }
             }
         } else {

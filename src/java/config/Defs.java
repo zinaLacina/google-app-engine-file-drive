@@ -15,6 +15,7 @@ public class Defs {
     public static final String ENTITY_PROPERTY_LASTNAME_STRING = "lastName";
     public static final String ENTITY_PROPERTY_FILENAME_STRING = "fileName";
     public static final String ENTITY_PROPERTY_DATE_CREATION = "created";
+    public static final String ENTITY_PROPERTY_FOLDER_NAME = "folderName";
     public static final String ENTITY_PROPERTY_PHOTO = "photo";
     public static final String ENTITY_PROPERTY_TYPE = "fileType";
     public static final String ENTITY_PROPERTY_OWNER = "owner";
@@ -48,4 +49,5 @@ public class Defs {
     public static final long DATASTORE_MAX_STORAGE_USER = 104857600;
     public static final String PARAM_USER_KEY_STRING = "userKey";
     public static final String BUCKET_STRING = "kid-cloud-computing-zina-2018.appspot.com";
+    public static final String ENTITY_PROPERTY_TRASH_CREATED_NAME = "trashCreated";
 }

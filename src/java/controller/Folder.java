@@ -14,6 +14,7 @@ import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 import com.google.appengine.tools.cloudstorage.RetryParams;
 import config.Defs;
+import config.GsHelper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -77,10 +78,15 @@ public class Folder extends HttpServlet {
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER, 1);
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_PARENT, 0);
             fileEntity.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, 0);
+            fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME, "none");
+            
 
-            GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, currentUSer.getUserName()+"/"+ folderName);
-            gcsService.createOrReplace(fileName, instance);
+            //GcsFilename fileName = new GcsFilename(bucket, currentUSer.getUserName()+"/"+ folderName);
+            //gcsService.createOrReplace(fileName, instance);
             //No need for filters.
+            String folderNa = currentUSer.getUserName()+"/"+ folderName;
+            GsHelper.createFolder(folderNa);
+            
             datastore.put(fileEntity);
 
             session.setAttribute(Defs.SESSION_MESSAGE_STRING, "Folder successfully created.");

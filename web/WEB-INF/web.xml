@@ -64,6 +64,14 @@
         <servlet-name>Favoris</servlet-name>
         <servlet-class>controller.Favoris</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MoveToFolder</servlet-name>
+        <servlet-class>controller.MoveToFolder</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Share</servlet-name>
+        <servlet-class>controller.Share</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Register</servlet-name>
         <url-pattern>/register</url-pattern>
@@ -127,6 +135,14 @@
     <servlet-mapping>
         <servlet-name>Favoris</servlet-name>
         <url-pattern>/favoris</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MoveToFolder</servlet-name>
+        <url-pattern>/movetofolder</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Share</servlet-name>
+        <url-pattern>/share</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -18,7 +18,7 @@
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <!-- Notifications Menu -->
-                
+                <li><a href="#">Update profile photo</a></li>
                 <!-- User Account Menu -->
                 <li class="dropdown user user-menu">
                     <!-- Menu Toggle Button -->

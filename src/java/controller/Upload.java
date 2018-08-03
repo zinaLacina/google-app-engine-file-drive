@@ -34,6 +34,7 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -73,6 +74,7 @@ public class Upload extends HttpServlet {
             fullAccess.add(currentUSer.getUserId());
             readAccess.add(currentUSer.getUserId());
             //String folderName = request.getParameter("folderName");
+            String folder = currentUSer.getFirstName()+""+currentUSer.getUserId();
 
             //get the current userId
             //userId = currentUSer.getUserId();
@@ -93,7 +95,7 @@ public class Upload extends HttpServlet {
                     FileItemStream fileItem = fileItemIterator.next();
                     String fileNameparam = fileItem.getName();
                     //Prepare the file name in GCS format.
-                    GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, currentUSer.getUserName()+"/"+ fileNameparam);
+                    GcsFilename fileName = new GcsFilename(Defs.BUCKET_STRING, folder+"/"+ fileNameparam);
                     GcsOutputChannel outputChannel;
                     //Read the contents from the request and send them to GCS.
                     outputChannel = gcsService.createOrReplace(fileName, instance);
@@ -125,11 +127,12 @@ public class Upload extends HttpServlet {
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_CREATED, new Date());
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_FULLACCESS, fullAccess);
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_ACCESSREAD, readAccess);
-                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, "txt");
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, FilenameUtils.getExtension(fileNameparam).toUpperCase());
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, fileSize);
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER, 0);
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_PARENT, 0);
                         fileEntity.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, 0);
+                        fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME, folder);
 
                         //No need for filters.
                         datastore.put(fileEntity);

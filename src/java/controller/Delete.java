@@ -5,10 +5,13 @@ import model.User;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import java.io.IOException;
-import java.util.List;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +35,7 @@ public class Delete extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, EntityNotFoundException {
         //Prepare the session context.
         HttpSession session = request.getSession(true);
         //Get the user information from the session context.
@@ -43,35 +46,43 @@ public class Delete extends HttpServlet {
         //Make sure that the user has already loggedin and that the fileName parameter is not empty/null.
         if (currentUSer != null
                 && fileName != null
-                && !fileName.equals("")) {
+                && !fileName.equals("")&&fileId>=0) {
             //Prepare the Datastore service.
             DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-            //We will serach in the 'Files' table for the file name.
-            Query fileQuery = new Query(Defs.DATASTORE_KIND_FILES_STRING);
-            //Set a filetr on the file name.
-            Query.Filter fileFilter = new Query.FilterPredicate(Defs.ENTITY_PROPERTY_FILENAME_STRING,
-                    Query.FilterOperator.EQUAL, fileName);
-            fileQuery.setFilter(fileFilter);
-            //Run the query.
-            List<Entity> dbFiles = datastore.prepare(fileQuery).asList(FetchOptions.Builder.withDefaults());
             
-            if (!dbFiles.isEmpty()) {
+            //get the file using the key
+            Key fileKey = KeyFactory.createKey(Defs.DATASTORE_KIND_FILES_STRING, fileId);
+            
+            //We will serach in the 'Files' table for the file name.
+            //Query fileQuery = new Query(Defs.DATASTORE_KIND_FILES_STRING);
+            //Set a filetr on the file name.
+            //Query.Filter fileFilter = new Query.FilterPredicate(Defs.ENTITY_PROPERTY_FILENAME_STRING,
+                    //Query.FilterOperator.EQUAL, fileName);
+            //fileQuery.setFilter(fileFilter);
+            //Run the query.
+            //List<Entity> dbFiles = datastore.prepare(fileQuery).asList(FetchOptions.Builder.withDefaults());
+            Entity dbFiles = datastore.get(fileKey);
+            
+            if (dbFiles!=null) {
                 
                 //Create entity Trah and save over there before remove
                 Entity trash = new Entity(Defs.DATASTORE_KIND_TRASH_STRING, fileId);
                 trash.setProperty(Defs.ENTITY_PROPERTY_FILENAME_STRING, fileName);
-                trash.setProperty(Defs.ENTITY_PROPERTY_OWNER, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_OWNER));
-                trash.setProperty(Defs.ENTITY_PROPERTY_CREATED, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_CREATED));
-                trash.setProperty(Defs.ENTITY_PROPERTY_FULLACCESS, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FULLACCESS));
-                trash.setProperty(Defs.ENTITY_PROPERTY_ACCESSREAD, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_ACCESSREAD));
-                trash.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FILETYPE));
-                trash.setProperty(Defs.ENTITY_PROPERTY_FOLDER, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FOLDER));
-                trash.setProperty(Defs.ENTITY_PROPERTY_PARENT, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_PARENT));
-                trash.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FILESIZE));
-                trash.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, dbFiles.get(0).getProperty(Defs.ENTITY_PROPERTY_FAVORITE));
+                trash.setProperty(Defs.ENTITY_PROPERTY_OWNER, dbFiles.getProperty(Defs.ENTITY_PROPERTY_OWNER));
+                trash.setProperty(Defs.ENTITY_PROPERTY_CREATED, dbFiles.getProperty(Defs.ENTITY_PROPERTY_CREATED));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FULLACCESS, dbFiles.getProperty(Defs.ENTITY_PROPERTY_FULLACCESS));
+                trash.setProperty(Defs.ENTITY_PROPERTY_ACCESSREAD, dbFiles.getProperty(Defs.ENTITY_PROPERTY_ACCESSREAD));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FILETYPE, dbFiles.getProperty(Defs.ENTITY_PROPERTY_FILETYPE));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FOLDER, dbFiles.getProperty(Defs.ENTITY_PROPERTY_FOLDER));
+                trash.setProperty(Defs.ENTITY_PROPERTY_PARENT, dbFiles.getProperty(Defs.ENTITY_PROPERTY_PARENT));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FILESIZE, dbFiles.getProperty(Defs.ENTITY_PROPERTY_FILESIZE));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FAVORITE, dbFiles.getProperty(Defs.ENTITY_PROPERTY_FAVORITE));
+                trash.setProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME, dbFiles.getProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME));
+                trash.setProperty(Defs.ENTITY_PROPERTY_TRASH_CREATED_NAME, new Date());
+                //fileEntity.setProperty(Defs.ENTITY_PROPERTY_FOLDER_NAME, "none");
                 datastore.put(trash);
                 //If the file name was found then delete it from the Datastore.
-                datastore.delete(dbFiles.get(0).getKey());
+                datastore.delete(dbFiles.getKey());
 
                 session.setAttribute(Defs.SESSION_MESSAGE_STRING, "The file indicated was deleted!");
                 response.sendRedirect(Defs.LIST_PAGE_STRING);
@@ -99,7 +110,11 @@ public class Delete extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -113,7 +128,11 @@ public class Delete extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (EntityNotFoundException ex) {
+            Logger.getLogger(Delete.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
